@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot Perpustakaan BPK RI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .chatbot-container {
+            width: 100%;
+            max-width: 450px;
+            height: 700px;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .chat-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-avatar {
+    width: 50px;
+    height: 50px;
+    background: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    flex-shrink: 0;
+    overflow: hidden; /* Penting untuk crop logo jadi bulat */
+    padding: 5px; /* Kasih sedikit padding */
+}
+
+.logo-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* Atau gunakan 'cover' kalau mau full */
+}
+
+        .header-info h2 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .header-info p {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+            background: #f8f9fa;
+            scroll-behavior: smooth;
+        }
+
+        .chat-messages::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: #cbd5e0;
+            border-radius: 3px;
+        }
+
+        .message {
+            margin-bottom: 16px;
+            display: flex;
+            gap: 10px;
+            animation: messageSlide 0.3s ease-out;
+        }
+
+        @keyframes messageSlide {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.bot {
+            flex-direction: row;
+        }
+
+        .message.user {
+            flex-direction: row-reverse;
+        }
+
+        .message-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .bot .message-avatar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .user .message-avatar {
+            background: #48bb78;
+            color: white;
+        }
+
+        .message-content {
+            max-width: 75%;
+            padding: 14px 18px;
+            border-radius: 18px;
+            line-height: 1.5;
+            font-size: 14px;
+        }
+
+        .bot .message-content {
+            background: white;
+            color: #2d3748;
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .user .message-content {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message-content strong {
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .quick-replies {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+            padding-left: 46px;
+        }
+
+        .quick-reply-btn {
+            padding: 8px 16px;
+            background: white;
+            border: 2px solid #667eea;
+            color: #667eea;
+            border-radius: 20px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .quick-reply-btn:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .typing-indicator {
+            display: none;
+            padding: 12px 18px;
+            background: white;
+            border-radius: 18px;
+            width: fit-content;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .typing-indicator.active {
+            display: block;
+        }
+
+        .typing-indicator span {
+            height: 8px;
+            width: 8px;
+            background: #cbd5e0;
+            border-radius: 50%;
+            display: inline-block;
+            margin: 0 2px;
+            animation: bounce 1.4s infinite ease-in-out;
+        }
+
+        .typing-indicator span:nth-child(1) {
+            animation-delay: -0.32s;
+        }
+
+        .typing-indicator span:nth-child(2) {
+            animation-delay: -0.16s;
+        }
+
+        @keyframes bounce {
+            0%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-8px);
+            }
+        }
+
+        .chat-input-container {
+            padding: 20px;
+            background: white;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .chat-input-wrapper {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            background: #f7fafc;
+            border-radius: 24px;
+            padding: 8px 8px 8px 20px;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .chat-input-wrapper:focus-within {
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        #userInput {
+            flex: 1;
+            border: none;
+            background: transparent;
+            outline: none;
+            font-size: 14px;
+            color: #2d3748;
+            padding: 8px 0;
+        }
+
+        #sendBtn {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        #sendBtn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        #sendBtn:active {
+            transform: scale(0.95);
+        }
+
+        .intent-badge {
+            display: inline-block;
+            font-size: 11px;
+            padding: 4px 10px;
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+            border-radius: 12px;
+            margin-top: 8px;
+            font-weight: 600;
+        }
+
+        /* Welcome Screen */
+        .welcome-screen {
+            text-align: center;
+            padding: 40px 20px;
+            color: #718096;
+        }
+
+        .welcome-screen .icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
+        .welcome-screen h3 {
+            font-size: 20px;
+            color: #2d3748;
+            margin-bottom: 12px;
+        }
+
+        .welcome-screen p {
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+
+        .suggested-questions {
+            display: grid;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .suggested-question {
+            padding: 12px 16px;
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 13px;
+            color: #4a5568;
+            text-align: left;
+        }
+
+        .suggested-question:hover {
+            border-color: #667eea;
+            background: #f7fafc;
+            transform: translateX(4px);
+        }
+    </style>
+</head>
+<body>
+    <div class="chatbot-container">
+        <div class="chat-header">
+            <div class="header-avatar">
+                <img src="../frontend/img/logo-bpk.png" alt="Logo BPK RI" class="logo-image">
+            </div>
+            <div class="header-info">
+                <h2>Tanya Perpustakaan</h2>
+                <p>BPK RI • Online 24/7</p>
+            </div>
+        </div>
+
+        <div class="chat-messages" id="chatMessages">
+            <div class="welcome-screen">
+                <div class="icon">👋</div>
+                <h3>Selamat Datang!</h3>
+                <p>Saya siap membantu Anda dengan informasi seputar Perpustakaan BPK RI</p>
+                
+                <div class="suggested-questions">
+                    <div class="suggested-question" onclick="sendSuggestion('Jam buka perpustakaan')">
+                        ⏰ Jam operasional perpustakaan
+                    </div>
+                    <div class="suggested-question" onclick="sendSuggestion('Cara pinjam buku')">
+                        📖 Prosedur peminjaman buku
+                    </div>
+                    <div class="suggested-question" onclick="sendSuggestion('Fasilitas perpustakaan')">
+                        🏢 Fasilitas yang tersedia
+                    </div>
+                    <div class="suggested-question" onclick="sendSuggestion('Lokasi perpustakaan')">
+                        📍 Lokasi dan alamat
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="chat-input-container">
+            <div class="chat-input-wrapper">
+                <input 
+                    type="text" 
+                    id="userInput" 
+                    placeholder="Ketik pertanyaan Anda..."
+                    onkeypress="handleKeyPress(event)"
+                >
+                <button id="sendBtn" onclick="sendMessage()">
+                    ➤
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5000/api';
+        let sessionId = generateSessionId();
+        let isFirstMessage = true;
+
+        function generateSessionId() {
+            return 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        function sendSuggestion(text) {
+            document.getElementById('userInput').value = text;
+            sendMessage();
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('userInput');
+            const message = input.value.trim();
+
+            if (!message) return;
+
+            // Clear welcome screen on first message
+            if (isFirstMessage) {
+                document.querySelector('.welcome-screen')?.remove();
+                isFirstMessage = false;
+            }
+
+            // Display user message
+            displayMessage(message, 'user');
+            input.value = '';
+
+            // Show typing indicator
+            showTypingIndicator();
+
+            try {
+                const response = await fetch(`${API_URL}/chat`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                        session_id: sessionId
+                    })
+                });
+
+                const data = await response.json();
+
+                // Hide typing indicator
+                hideTypingIndicator();
+
+                if (response.ok) {
+                    // Display bot response
+                    displayMessage(
+                        data.message, 
+                        'bot', 
+                        data.quick_replies,
+                        data.intent,
+                        data.confidence
+                    );
+                } else {
+                    displayMessage(
+                        'Maaf, terjadi kesalahan. Silakan coba lagi.',
+                        'bot'
+                    );
+                }
+            } catch (error) {
+                hideTypingIndicator();
+                console.error('Error:', error);
+                displayMessage(
+                    'Maaf, tidak dapat terhubung ke server. Pastikan backend sudah berjalan.',
+                    'bot'
+                );
+            }
+        }
+
+        function displayMessage(text, sender, quickReplies = [], intent = null, confidence = null) {
+            const messagesContainer = document.getElementById('chatMessages');
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+
+            const avatar = document.createElement('div');
+            avatar.className = 'message-avatar';
+            avatar.textContent = sender === 'bot' ? '🤖' : '👤';
+
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+            
+            // Format message (support markdown-like formatting)
+            const formattedText = formatMessage(text);
+            contentDiv.innerHTML = formattedText;
+
+            // Add intent badge for bot messages
+            if (sender === 'bot' && intent && confidence) {
+                const badge = document.createElement('div');
+                badge.className = 'intent-badge';
+                badge.textContent = `${intent} (${Math.round(confidence * 100)}%)`;
+                contentDiv.appendChild(badge);
+            }
+
+            messageDiv.appendChild(avatar);
+            messageDiv.appendChild(contentDiv);
+            messagesContainer.appendChild(messageDiv);
+
+            // Add quick replies
+            if (quickReplies && quickReplies.length > 0) {
+                const repliesDiv = document.createElement('div');
+                repliesDiv.className = 'quick-replies';
+
+                quickReplies.forEach(reply => {
+                    const btn = document.createElement('button');
+                    btn.className = 'quick-reply-btn';
+                    btn.textContent = reply;
+                    btn.onclick = () => {
+                        document.getElementById('userInput').value = reply;
+                        sendMessage();
+                    };
+                    repliesDiv.appendChild(btn);
+                });
+
+                messagesContainer.appendChild(repliesDiv);
+            }
+
+            scrollToBottom();
+        }
+
+        function formatMessage(text) {
+            // Convert **bold** to <strong>
+            text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            
+            // Convert line breaks
+            text = text.replace(/\n/g, '<br>');
+            
+            // Convert bullet points
+            text = text.replace(/•/g, '•');
+            
+            return text;
+        }
+
+        function showTypingIndicator() {
+            const messagesContainer = document.getElementById('chatMessages');
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message bot';
+            messageDiv.id = 'typingIndicator';
+
+            const avatar = document.createElement('div');
+            avatar.className = 'message-avatar';
+            avatar.textContent = '🤖';
+
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'typing-indicator active';
+            typingDiv.innerHTML = '<span></span><span></span><span></span>';
+
+            messageDiv.appendChild(avatar);
+            messageDiv.appendChild(typingDiv);
+            messagesContainer.appendChild(messageDiv);
+
+            scrollToBottom();
+        }
+
+        function hideTypingIndicator() {
+            const indicator = document.getElementById('typingIndicator');
+            if (indicator) {
+                indicator.remove();
+            }
+        }
+
+        function scrollToBottom() {
+            const messagesContainer = document.getElementById('chatMessages');
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        // Initialize
+        console.log('🤖 Chatbot Perpustakaan BPK RI initialized');
+        console.log('Session ID:', sessionId);
+    </script>
+</body>
+</html>

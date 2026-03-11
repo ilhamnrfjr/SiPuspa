@@ -1,0 +1,93 @@
+{
+  "koleksi_populer": [
+    {
+      "id": "BK001",
+      "judul": "Akuntansi Sektor Publik Indonesia",
+      "penulis": "Dr. Mardiasmo, MBA, Ak.",
+      "tahun": "2023",
+      "penerbit": "Andi Publisher",
+      "status": "Tersedia",
+      "lokasi": "Rak A1-03",
+      "kategori": "Akuntansi"
+    },
+    {
+      "id": "BK002",
+      "judul": "Audit Keuangan Negara",
+      "penulis": "Prof. Dr. Abdul Halim",
+      "tahun": "2024",
+      "penerbit": "Salemba Empat",
+      "status": "Dipinjam",
+      "lokasi": "Rak A2-15",
+      "kategori": "Auditing"
+    },
+    {
+      "id": "BK003",
+      "judul": "Good Governance and Financial Accountability",
+      "penulis": "Dr. Sri Mulyani",
+      "tahun": "2023",
+      "penerbit": "Gramedia",
+      "status": "Tersedia",
+      "lokasi": "Rak B1-08",
+      "kategori": "Governance"
+    }
+  ],
+  "study_buddy_availability": [
+    {
+      "ruang": "Study Buddy A",
+      "kapasitas": 6,
+      "fasilitas": ["Whiteboard", "Proyektor", "AC", "WiFi"],
+      "jadwal_tersedia": [
+        {"tanggal": "2025-11-25", "jam": "08:00", "status": "available"},
+        {"tanggal": "2025-11-25", "jam": "11:00", "status": "booked"},
+        {"tanggal": "2025-11-25", "jam": "13:00", "status": "available"}
+      ]
+    },
+    {
+      "ruang": "Study Buddy B",
+      "kapasitas": 4,
+      "fasilitas": ["Whiteboard", "TV LED", "AC", "WiFi"],
+      "jadwal_tersedia": [
+        {"tanggal": "2025-11-25", "jam": "08:00", "status": "available"},
+        {"tanggal": "2025-11-25", "jam": "11:00", "status": "available"},
+        {"tanggal": "2025-11-25", "jam": "13:00", "status": "booked"}
+      ]
+    },
+    {
+      "ruang": "Study Buddy C",
+      "kapasitas": 6,
+      "fasilitas": ["Whiteboard", "Proyektor", "Soundsystem", "AC", "WiFi"],
+      "jadwal_tersedia": [
+        {"tanggal": "2025-11-25", "jam": "08:00", "status": "booked"},
+        {"tanggal": "2025-11-25", "jam": "11:00", "status": "available"},
+        {"tanggal": "2025-11-25", "jam": "13:00", "status": "available"}
+      ]
+    }
+  ],
+  "upcoming_events": [
+    {
+      "judul": "Workshop Mendeley untuk Penelitian",
+      "tanggal": "2025-11-28",
+      "waktu": "13:00-15:00 WIB",
+      "lokasi": "Ruang Multimedia Perpustakaan",
+      "pemateri": "Dr. Andi Saputra, M.Si.",
+      "kuota": 30,
+      "deskripsi": "Pelatihan penggunaan Mendeley untuk manajemen referensi dan sitasi otomatis"
+    },
+    {
+      "judul": "Literasi Digital: Evaluasi Sumber Informasi",
+      "tanggal": "2025-12-05",
+      "waktu": "10:00-12:00 WIB",
+      "lokasi": "Aula Perpustakaan",
+      "pemateri": "Prof. Dr. Retno Wulandari",
+      "kuota": 50,
+      "deskripsi": "Meningkatkan kemampuan menilai kredibilitas sumber informasi digital"
+    }
+  ],
+  "statistik": {
+    "total_koleksi": 15234,
+    "koleksi_digital": 3450,
+    "anggota_aktif": 1876,
+    "peminjaman_bulan_ini": 423,
+    "pengunjung_hari_ini": 67
+  }
+}

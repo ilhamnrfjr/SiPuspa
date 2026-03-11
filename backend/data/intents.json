@@ -1,0 +1,225 @@
+{
+  "intents": [
+    {
+      "intent": "jam_operasional",
+      "patterns": [
+        "jam buka perpustakaan",
+        "jam operasional",
+        "buka jam berapa",
+        "tutup jam berapa",
+        "perpustakaan buka kapan",
+        "jadwal buka perpustakaan",
+        "jam layanan",
+        "hari apa saja buka",
+        "buka hari sabtu",
+        "libur hari apa"
+      ],
+      "entities": ["hari", "jam"],
+      "response_key": "jam_operasional"
+    },
+    {
+      "intent": "lokasi",
+      "patterns": [
+        "di mana lokasi perpustakaan",
+        "alamat perpustakaan",
+        "perpustakaan ada di mana",
+        "lantai berapa perpustakaan",
+        "gedung apa perpustakaan",
+        "cara ke perpustakaan",
+        "dimana letak perpustakaan",
+        "posisi perpustakaan",
+        "perpustakaan di gedung mana"
+      ],
+      "entities": ["gedung", "lantai"],
+      "response_key": "lokasi"
+    },
+    {
+      "intent": "peminjaman_buku",
+      "patterns": [
+        "cara pinjam buku",
+        "prosedur peminjaman",
+        "syarat pinjam buku",
+        "bagaimana meminjam buku",
+        "ketentuan peminjaman",
+        "durasi peminjaman",
+        "berapa lama bisa pinjam",
+        "maksimal pinjam berapa buku",
+        "perpanjangan buku",
+        "cara perpanjang pinjaman"
+      ],
+      "entities": ["jenis_koleksi", "durasi"],
+      "response_key": "peminjaman_buku"
+    },
+    {
+      "intent": "koleksi",
+      "patterns": [
+        "koleksi buku apa saja",
+        "cari buku tentang",
+        "ada buku",
+        "koleksi terbaru",
+        "buku bahasa inggris",
+        "jurnal apa saja",
+        "koleksi digital",
+        "e-book tersedia",
+        "database online",
+        "pencarian koleksi"
+      ],
+      "entities": ["judul", "penulis", "tahun_terbit", "bahasa", "subjek"],
+      "response_key": "koleksi"
+    },
+    {
+      "intent": "sarana_prasarana",
+      "patterns": [
+        "fasilitas perpustakaan",
+        "ada ruang baca",
+        "ruang diskusi tersedia",
+        "study buddy",
+        "wifi perpustakaan",
+        "komputer perpustakaan",
+        "loker tersedia",
+        "fasilitas apa saja",
+        "ruang multimedia",
+        "area santai"
+      ],
+      "entities": ["jenis_fasilitas", "kapasitas"],
+      "response_key": "sarana_prasarana"
+    },
+    {
+      "intent": "usulan_buku",
+      "patterns": [
+        "cara usul buku",
+        "usulan koleksi baru",
+        "request buku",
+        "mengajukan buku baru",
+        "form usulan",
+        "prosedur usulan",
+        "saran pembelian buku",
+        "bagaimana mengusulkan buku"
+      ],
+      "entities": ["judul_usulan", "penulis", "alasan"],
+      "response_key": "usulan_buku"
+    },
+    {
+      "intent": "acara",
+      "patterns": [
+        "jadwal kegiatan",
+        "acara perpustakaan",
+        "seminar bulan ini",
+        "workshop perpustakaan",
+        "pelatihan literasi",
+        "events library",
+        "kegiatan apa saja",
+        "kapan ada seminar",
+        "acara mendatang"
+      ],
+      "entities": ["jenis_acara", "tanggal", "pemateri"],
+      "response_key": "acara"
+    },
+    {
+      "intent": "study_buddy",
+      "patterns": [
+        "booking study buddy",
+        "cara booking ruang",
+        "reservasi ruang diskusi",
+        "pesan study room",
+        "kapasitas study buddy",
+        "fasilitas study buddy",
+        "jam booking ruang",
+        "cara pesan ruang"
+      ],
+      "entities": ["tanggal", "jam", "jumlah_orang"],
+      "response_key": "study_buddy"
+    },
+    {
+      "intent": "akreditasi",
+      "patterns": [
+        "status akreditasi",
+        "perpustakaan terakreditasi",
+        "sertifikat akreditasi",
+        "standar perpustakaan",
+        "akreditasi nasional",
+        "kualitas perpustakaan"
+      ],
+      "entities": ["jenis_akreditasi", "tahun"],
+      "response_key": "akreditasi"
+    },
+    {
+      "intent": "kontak",
+      "patterns": [
+        "nomor telepon perpustakaan",
+        "email perpustakaan",
+        "kontak perpustakaan",
+        "hubungi perpustakaan",
+        "contact person",
+        "whatsapp perpustakaan"
+      ],
+      "entities": [],
+      "response_key": "kontak"
+    },
+    {
+      "intent": "keanggotaan",
+      "patterns": [
+        "cara daftar anggota",
+        "syarat menjadi anggota",
+        "pendaftaran member",
+        "biaya keanggotaan",
+        "kartu anggota hilang",
+        "perpanjang keanggotaan"
+      ],
+      "entities": ["jenis_anggota"],
+      "response_key": "keanggotaan"
+    },
+    {
+      "intent": "denda",
+      "patterns": [
+        "berapa denda telat",
+        "denda keterlambatan",
+        "biaya denda perpustakaan",
+        "sanksi telat mengembalikan",
+        "cara bayar denda"
+      ],
+      "entities": ["jumlah_hari"],
+      "response_key": "denda"
+    },
+    {
+      "intent": "salam",
+      "patterns": [
+        "halo",
+        "hai",
+        "hi",
+        "hello",
+        "selamat pagi",
+        "selamat siang",
+        "selamat sore",
+        "selamat malam",
+        "assalamualaikum"
+      ],
+      "entities": [],
+      "response_key": "salam"
+    },
+    {
+      "intent": "terima_kasih",
+      "patterns": [
+        "terima kasih",
+        "makasih",
+        "thanks",
+        "thank you",
+        "terimakasih banyak"
+      ],
+      "entities": [],
+      "response_key": "terima_kasih"
+    },
+    {
+      "intent": "lainnya",
+      "patterns": [
+        "saran untuk perpustakaan",
+        "kritik dan saran",
+        "feedback",
+        "keluhan",
+        "komplain"
+      ],
+      "entities": ["jenis_feedback", "isi_pesan"],
+      "response_key": "lainnya"
+    }
+  ]
+}
