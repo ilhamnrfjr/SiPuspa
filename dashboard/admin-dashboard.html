@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - Chatbot Perpustakaan BPK RI</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
         .stat-card { background: white; border-radius: 1rem; padding: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); transition: all 0.3s; }
@@ -53,14 +52,10 @@
                     Login
                 </button>
             </form>
-            
-            <div class="mt-6 text-center text-sm text-gray-500">
-                <p>Default: admin / admin123</p>
-            </div>
         </div>
     </div>
 
-    <!-- Main Dashboard (Tambahkan setelah Login Page) -->
+    <!-- Main Dashboard -->
     <div id="mainDashboard" style="display: none;">
         <!-- Header -->
         <div class="bg-white shadow-lg border-b border-gray-200">
@@ -149,13 +144,12 @@
                 </div>
             </div>
 
-<!-- Tabs (Lanjutan dari PART 2) -->
+            <!-- Tabs — Intent Analysis dihapus -->
             <div class="bg-white rounded-xl shadow-lg mb-6">
                 <div class="border-b border-gray-200">
                     <div class="flex space-x-8 px-6">
                         <button onclick="switchTab('overview')" id="tabOverview" class="py-4 px-2 border-b-2 font-medium text-sm transition-colors tab-active">Overview</button>
                         <button onclick="switchTab('logs')" id="tabLogs" class="py-4 px-2 border-b-2 font-medium text-sm transition-colors tab-inactive">Conversation Logs</button>
-                        <button onclick="switchTab('intents')" id="tabIntents" class="py-4 px-2 border-b-2 font-medium text-sm transition-colors tab-inactive">Intent Analysis</button>
                         <button onclick="switchTab('manage')" id="tabManage" class="py-4 px-2 border-b-2 font-medium text-sm transition-colors tab-inactive">🛠️ Manage Intents</button>
                     </div>
                 </div>
@@ -164,67 +158,114 @@
                     <!-- Overview Tab -->
                     <div id="overviewTab">
                         <div class="space-y-6">
+
+                            <!-- Row 1: Line chart pesan per hari -->
                             <div class="bg-gradient-to-br from-purple-50 to-blue-50 rounded-xl p-6">
-                                <h3 class="text-lg font-semibold text-gray-800 mb-4">📊 Pesan Per Hari (7 Hari Terakhir)</h3>
-                                <canvas id="messagesChart" height="100"></canvas>
+                                <h3 class="text-lg font-semibold text-gray-800 mb-1">📊 Pesan Per Hari (7 Hari Terakhir)</h3>
+                                <p class="text-xs text-gray-500 mb-4">Tren volume percakapan harian</p>
+                                <canvas id="messagesChart" height="80"></canvas>
                             </div>
 
+                            <!-- Row 2: Frekuensi intent + Aktivitas per jam -->
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div class="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-6">
-                                    <h3 class="text-lg font-semibold text-gray-800 mb-4">🎯 Top 10 Intent</h3>
-                                    <canvas id="intentsChart" height="150"></canvas>
+                                    <h3 class="text-lg font-semibold text-gray-800 mb-1">🎯 Frekuensi Intent</h3>
+                                    <p class="text-xs text-gray-500 mb-4">Semua intent — dinamis mengikuti data aktual</p>
+                                    <canvas id="intentsChart" height="160"></canvas>
                                 </div>
-                                <div class="bg-gradient-to-br from-pink-50 to-purple-50 rounded-xl p-6">
-                                    <h3 class="text-lg font-semibold text-gray-800 mb-4">📈 Distribusi Intent</h3>
-                                    <canvas id="pieChart" height="150"></canvas>
+                                <div class="bg-gradient-to-br from-green-50 to-teal-50 rounded-xl p-6">
+                                    <h3 class="text-lg font-semibold text-gray-800 mb-1">🕐 Aktivitas Per Jam</h3>
+                                    <p class="text-xs text-gray-500 mb-4">Kapan chatbot paling banyak dipakai (7 hari terakhir)</p>
+                                    <canvas id="hourlyChart" height="160"></canvas>
                                 </div>
                             </div>
+
+                            <!-- Row 3: Confidence per intent -->
+                            <div class="bg-gradient-to-br from-orange-50 to-yellow-50 rounded-xl p-6">
+                                <h3 class="text-lg font-semibold text-gray-800 mb-1">🎯 Rata-rata Confidence per Intent</h3>
+                                <p class="text-xs text-gray-500 mb-1">Diurutkan dari confidence terendah — <span class="text-red-500 font-medium">merah</span> perlu perbaikan patterns, <span class="text-yellow-600 font-medium">kuning</span> perlu ditingkatkan, <span class="text-green-600 font-medium">hijau</span> sudah baik</p>
+                                <p class="text-xs text-gray-400 mb-4">Threshold: &lt;60% = merah, 60–80% = kuning, &gt;80% = hijau</p>
+                                <canvas id="confidenceChart" height="120"></canvas>
+                            </div>
+
+                            <!-- Row 4: Intent coverage table -->
+                            <div class="bg-white rounded-xl border border-gray-200 p-6">
+                                <div class="flex items-center justify-between mb-4">
+                                    <div>
+                                        <h3 class="text-lg font-semibold text-gray-800">📋 Intent Coverage</h3>
+                                        <p class="text-xs text-gray-500 mt-1">Intent mana yang sudah pernah dipanggil user vs yang belum</p>
+                                    </div>
+                                    <span id="coverageStats" class="text-xs text-gray-400 bg-gray-100 px-3 py-1 rounded-full"></span>
+                                </div>
+                                <div class="overflow-hidden rounded-lg border border-gray-100">
+                                    <table class="w-full">
+                                        <thead class="bg-gray-50">
+                                            <tr>
+                                                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600">INTENT</th>
+                                                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600">PATTERNS</th>
+                                                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600">TOTAL DIPANGGIL</th>
+                                                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600">STATUS</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="coverageTableBody"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
 
                     <!-- Logs Tab -->
                     <div id="logsTab" style="display: none;">
                         <div class="space-y-4">
-                            <div class="flex gap-4">
-                                <div class="flex-1 relative">
-                                    <svg class="absolute left-3 top-3 text-gray-400" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <circle cx="11" cy="11" r="8"></circle>
-                                        <path d="m21 21-4.35-4.35"></path>
+
+                            <!-- Toolbar: search + filter + backup + delete all -->
+                            <div class="flex flex-wrap gap-3 items-center">
+                                <div class="flex-1 min-w-[200px] relative">
+                                    <svg class="absolute left-3 top-2.5 text-gray-400" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path>
                                     </svg>
                                     <input type="text" id="searchInput" oninput="filterLogs()" placeholder="Cari percakapan..."
-                                           class="w-full pl-10 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-600">
+                                           class="w-full pl-9 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-600 text-sm">
                                 </div>
-                                <select id="intentFilter" onchange="filterLogs()" class="px-4 py-2 border rounded-lg">
+                                <select id="intentFilter" onchange="filterLogs()" class="px-3 py-2 border rounded-lg text-sm">
                                     <option value="all">Semua Intent</option>
                                 </select>
+
+                                <!-- Backup CSV langsung -->
+                                <button onclick="downloadBackup('csv')"
+                                        class="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg text-sm hover:bg-green-700 transition-colors">
+                                    📥 Backup CSV
+                                </button>
+
+                                <!-- Hapus semua -->
+                                <button onclick="deleteAllLogs()"
+                                        class="flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-lg text-sm hover:bg-red-600 transition-colors">
+                                    🗑️ Hapus Semua
+                                </button>
                             </div>
+
+                            <p class="text-xs text-gray-400">💡 Klik baris untuk melihat detail percakapan dalam 1 session</p>
+
                             <div class="bg-white rounded-lg border overflow-hidden">
                                 <table class="w-full">
                                     <thead class="bg-gradient-to-r from-purple-600 to-blue-600 text-white">
                                         <tr>
-                                            <th class="px-4 py-3 text-left text-xs font-semibold">WAKTU</th>
-                                            <th class="px-4 py-3 text-left text-xs font-semibold">PESAN USER</th>
-                                            <th class="px-4 py-3 text-left text-xs font-semibold">INTENT</th>
-                                            <th class="px-4 py-3 text-left text-xs font-semibold">CONFIDENCE</th>
-                                            <th class="px-4 py-3 text-left text-xs font-semibold">RESPONSE TIME</th>
+                                            <th class="px-4 py-3 text-left text-xs font-semibold">WAKTU MULAI</th>
+                                            <th class="px-4 py-3 text-left text-xs font-semibold">PESAN</th>
+                                            <th class="px-4 py-3 text-left text-xs font-semibold">INTENT YANG DIGUNAKAN</th>
+                                            <th class="px-4 py-3 text-left text-xs font-semibold">SESSION ID</th>
+                                            <th class="px-4 py-3 text-left text-xs font-semibold">AKSI</th>
                                         </tr>
                                     </thead>
                                     <tbody id="logsTableBody"></tbody>
                                 </table>
                             </div>
-                            <div id="logsCount" class="text-sm text-gray-600 text-center pt-4">Menampilkan 0 percakapan</div>
+                            <div id="logsCount" class="text-sm text-gray-600 text-center pt-2">0 session</div>
                         </div>
                     </div>
 
-                    <!-- Intents Analysis Tab -->
-                    <div id="intentsTab" style="display: none;">
-                        <div class="bg-gradient-to-br from-purple-50 to-blue-50 rounded-xl p-6">
-                            <h3 class="text-lg font-semibold text-gray-800 mb-4">🎯 Analisis Intent Detail</h3>
-                            <div id="intentsList" class="space-y-3"></div>
-                        </div>
-                    </div>
-
-<!-- Manage Intents Tab (Lanjutan dari PART 3) -->
+                    <!-- Manage Intents Tab -->
                     <div id="manageTab" style="display: none;">
                         <div class="mb-6">
                             <button onclick="showAddIntentModal()" 
@@ -322,494 +363,22 @@
         </div>
     </div>
 
-<script>
-        // Masukkan di dalam <script> tag setelah Modal
-        const API_URL = 'http://localhost:5000/api';
-        let authToken = localStorage.getItem('admin_token');
-        let analyticsData = null;
-        let logsData = [];
-        let allLogs = [];
-        let allIntents = [];
-        let charts = {};
+    <!-- Modal Session Detail -->
+    <div id="sessionModal" class="modal">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden">
+            <!-- Header -->
+            <div class="flex justify-between items-center px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-purple-600 to-blue-600">
+                <div class="flex items-center gap-3">
+                    <span class="text-2xl">💬</span>
+                    <h3 class="text-lg font-bold text-white" id="sessionModalTitle">Detail Session</h3>
+                </div>
+                <button onclick="closeSessionModal()" class="text-white/70 hover:text-white text-2xl leading-none">×</button>
+            </div>
+            <!-- Scrollable content -->
+            <div id="sessionModalContent" class="flex-1 overflow-y-auto p-6"></div>
+        </div>
+    </div>
 
-        window.addEventListener('load', function() {
-            if (authToken) {
-                verifyAndLoadDashboard();
-            } else {
-                showLoginPage();
-            }
-        });
-
-        async function verifyAndLoadDashboard() {
-            try {
-                const response = await fetch(`${API_URL}/auth/verify`, {
-                    headers: { 'Authorization': `Bearer ${authToken}` }
-                });
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    document.getElementById('adminName').textContent = data.user.full_name;
-                    showDashboard();
-                    loadDashboard();
-                } else {
-                    localStorage.removeItem('admin_token');
-                    showLoginPage();
-                }
-            } catch (error) {
-                console.error('Verification failed:', error);
-                showLoginPage();
-            }
-        }
-
-        async function handleLogin(event) {
-            event.preventDefault();
-            
-            const username = document.getElementById('loginUsername').value;
-            const password = document.getElementById('loginPassword').value;
-            const loginBtn = document.getElementById('loginBtn');
-            const errorDiv = document.getElementById('loginError');
-            
-            loginBtn.disabled = true;
-            loginBtn.textContent = 'Logging in...';
-            errorDiv.classList.add('hidden');
-            
-            try {
-                const response = await fetch(`${API_URL}/auth/login`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, password })
-                });
-                
-                const data = await response.json();
-                
-                if (response.ok) {
-                    authToken = data.token;
-                    localStorage.setItem('admin_token', authToken);
-                    document.getElementById('adminName').textContent = data.user.full_name;
-                    showDashboard();
-                    loadDashboard();
-                } else {
-                    errorDiv.textContent = data.message || 'Login gagal';
-                    errorDiv.classList.remove('hidden');
-                }
-            } catch (error) {
-                errorDiv.textContent = 'Tidak dapat terhubung ke server. Pastikan backend running.';
-                errorDiv.classList.remove('hidden');
-            } finally {
-                loginBtn.disabled = false;
-                loginBtn.textContent = 'Login';
-            }
-        }
-
-        function handleLogout() {
-            if (confirm('Yakin ingin logout?')) {
-                fetch(`${API_URL}/auth/logout`, {
-                    method: 'POST',
-                    headers: { 'Authorization': `Bearer ${authToken}` }
-                });
-                
-                localStorage.removeItem('admin_token');
-                authToken = null;
-                showLoginPage();
-            }
-        }
-
-        function showLoginPage() {
-            document.getElementById('loginPage').style.display = 'flex';
-            document.getElementById('mainDashboard').style.display = 'none';
-        }
-
-        function showDashboard() {
-            document.getElementById('loginPage').style.display = 'none';
-            document.getElementById('mainDashboard').style.display = 'block';
-        }
-
-        async function loadDashboard() {
-            await Promise.all([fetchAnalytics(), fetchLogs(), fetchIntentsForManagement()]);
-        }
-
-// Lanjutan dari PART 5
-        async function fetchAnalytics() {
-            const response = await fetch(`${API_URL}/admin/analytics/summary`, {
-                headers: { 'Authorization': `Bearer ${authToken}` }
-            });
-            analyticsData = await response.json();
-            updateStatsCards();
-            updateCharts();
-            updateIntentsAnalysis();
-        }
-
-        async function fetchLogs() {
-            const response = await fetch(`${API_URL}/admin/logs?limit=100`, {
-                headers: { 'Authorization': `Bearer ${authToken}` }
-            });
-            const data = await response.json();
-            logsData = data.logs || [];
-            allLogs = [...logsData];
-            updateLogsTable();
-            updateIntentFilter();
-        }
-
-        async function fetchIntentsForManagement() {
-            const response = await fetch(`${API_URL}/admin/intents`, {
-                headers: { 'Authorization': `Bearer ${authToken}` }
-            });
-            const data = await response.json();
-            allIntents = data.intents || [];
-            updateManageIntentsTable();
-        }
-
-        function updateStatsCards() {
-            document.getElementById('totalConversations').textContent = analyticsData.total_conversations || 0;
-            document.getElementById('totalMessages').textContent = analyticsData.total_messages || 0;
-            document.getElementById('avgResponseTime').textContent = `${analyticsData.avg_response_time || 0}s`;
-            document.getElementById('avgConfidence').textContent = `${Math.round((analyticsData.avg_confidence || 0) * 100)}%`;
-        }
-
-        function updateCharts() {
-            // Destroy existing charts
-            Object.values(charts).forEach(chart => chart && chart.destroy());
-            
-            // Messages per day chart
-            const messagesCtx = document.getElementById('messagesChart').getContext('2d');
-            charts.messages = new Chart(messagesCtx, {
-                type: 'line',
-                data: {
-                    labels: (analyticsData.messages_per_day || []).map(d => d.date),
-                    datasets: [{
-                        label: 'Pesan',
-                        data: (analyticsData.messages_per_day || []).map(d => d.count),
-                        borderColor: '#667eea',
-                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
-                        tension: 0.4,
-                        fill: true
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: true,
-                    plugins: { legend: { display: false } },
-                    scales: { y: { beginAtZero: true } }
-                }
-            });
-
-            // Top intents bar chart
-            const intentsCtx = document.getElementById('intentsChart').getContext('2d');
-            const topIntents = (analyticsData.top_intents || []).slice(0, 10);
-            charts.intents = new Chart(intentsCtx, {
-                type: 'bar',
-                data: {
-                    labels: topIntents.map(i => i.intent),
-                    datasets: [{
-                        label: 'Jumlah',
-                        data: topIntents.map(i => i.count),
-                        backgroundColor: '#667eea'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: true,
-                    plugins: { legend: { display: false } },
-                    scales: { y: { beginAtZero: true } }
-                }
-            });
-
-            // Pie chart
-            const pieCtx = document.getElementById('pieChart').getContext('2d');
-            const topIntentsPie = (analyticsData.top_intents || []).slice(0, 6);
-            charts.pie = new Chart(pieCtx, {
-                type: 'pie',
-                data: {
-                    labels: topIntentsPie.map(i => i.intent),
-                    datasets: [{
-                        data: topIntentsPie.map(i => i.count),
-                        backgroundColor: ['#667eea', '#764ba2', '#f093fb', '#4facfe', '#43e97b', '#fa709a']
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: true,
-                    plugins: { legend: { position: 'bottom' } }
-                }
-            });
-        }
-
-        function updateIntentsAnalysis() {
-            const container = document.getElementById('intentsList');
-            const intents = analyticsData.top_intents || [];
-            
-            if (intents.length === 0) {
-                container.innerHTML = '<p class="text-gray-500 text-center py-8">Belum ada data intent</p>';
-                return;
-            }
-            
-            container.innerHTML = intents.map((intent, index) => {
-                const percentage = ((intent.count / analyticsData.total_messages) * 100).toFixed(1);
-                return `
-                    <div class="bg-white rounded-lg p-4 shadow-sm">
-                        <div class="flex items-center justify-between mb-2">
-                            <div class="flex items-center gap-3">
-                                <span class="text-2xl font-bold text-gray-300">#${index + 1}</span>
-                                <span class="font-semibold text-gray-800">${intent.intent}</span>
-                            </div>
-                            <div class="text-right">
-                                <span class="text-lg font-bold text-purple-600">${intent.count}</span>
-                                <span class="text-sm text-gray-500 ml-2">(${percentage}%)</span>
-                            </div>
-                        </div>
-                        <div class="w-full bg-gray-200 rounded-full h-2">
-                            <div class="bg-gradient-to-r from-purple-600 to-blue-600 h-2 rounded-full transition-all duration-500"
-                                 style="width: ${percentage}%"></div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-// Lanjutan dari PART 6
-        function updateLogsTable() {
-            const tbody = document.getElementById('logsTableBody');
-            
-            if (logsData.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" class="px-4 py-8 text-center text-gray-500">Tidak ada data</td></tr>';
-                document.getElementById('logsCount').textContent = 'Menampilkan 0 percakapan';
-                return;
-            }
-
-            tbody.innerHTML = logsData.map(log => {
-                const date = new Date(log.timestamp);
-                const confidenceColor = log.confidence > 0.8 ? 'text-green-600' : 
-                                       log.confidence > 0.5 ? 'text-yellow-600' : 'text-red-600';
-                
-                return `
-                    <tr class="hover:bg-gray-50 transition-colors">
-                        <td class="px-4 py-3 text-sm text-gray-600">
-                            ${date.toLocaleDateString('id-ID', { day: '2-digit', month: 'short' })} 
-                            ${date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
-                        </td>
-                        <td class="px-4 py-3 text-sm text-gray-800 max-w-md truncate">${log.user_message}</td>
-                        <td class="px-4 py-3">
-                            <span class="px-2 py-1 text-xs font-medium bg-purple-100 text-purple-700 rounded-full">
-                                ${log.intent}
-                            </span>
-                        </td>
-                        <td class="px-4 py-3 text-sm ${confidenceColor} font-medium">
-                            ${Math.round((log.confidence || 0) * 100)}%
-                        </td>
-                        <td class="px-4 py-3 text-sm text-gray-600">
-                            ${(log.response_time || 0).toFixed(3)}s
-                        </td>
-                    </tr>
-                `;
-            }).join('');
-
-            document.getElementById('logsCount').textContent = `Menampilkan ${logsData.length} percakapan`;
-        }
-
-        function updateIntentFilter() {
-            const select = document.getElementById('intentFilter');
-            const intents = [...new Set(allLogs.map(log => log.intent))];
-            
-            select.innerHTML = '<option value="all">Semua Intent</option>' +
-                intents.map(intent => `<option value="${intent}">${intent}</option>`).join('');
-        }
-
-        function updateManageIntentsTable() {
-            const tbody = document.getElementById('manageIntentsBody');
-            
-            if (allIntents.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" class="px-4 py-8 text-center text-gray-500">Belum ada intent</td></tr>';
-                return;
-            }
-            
-            tbody.innerHTML = allIntents.map(intent => {
-                const intentJson = JSON.stringify(intent).replace(/'/g, "&apos;");
-                return `
-                <tr class="hover:bg-gray-50">
-                    <td class="px-4 py-3 font-medium">${intent.intent}</td>
-                    <td class="px-4 py-3 text-sm text-gray-600">${intent.patterns.length} patterns</td>
-                    <td class="px-4 py-3 text-sm">${intent.response_key}</td>
-                    <td class="px-4 py-3">
-                        <button onclick='editIntent(${intentJson})' 
-                                class="px-3 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600 mr-2">
-                            ✏️ Edit
-                        </button>
-                        <button onclick="deleteIntent('${intent.intent}')" 
-                                class="px-3 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600">
-                            🗑️ Delete
-                        </button>
-                    </td>
-                </tr>
-            `}).join('');
-        }
-
-        function filterLogs() {
-            const searchQuery = document.getElementById('searchInput').value.toLowerCase();
-            const intentFilter = document.getElementById('intentFilter').value;
-            
-            logsData = allLogs.filter(log => {
-                const matchesSearch = log.user_message.toLowerCase().includes(searchQuery) ||
-                                     log.bot_response.toLowerCase().includes(searchQuery);
-                const matchesIntent = intentFilter === 'all' || log.intent === intentFilter;
-                return matchesSearch && matchesIntent;
-            });
-            
-            updateLogsTable();
-        }
-
-        function switchTab(tab) {
-            ['overviewTab', 'logsTab', 'intentsTab', 'manageTab'].forEach(id => {
-                document.getElementById(id).style.display = 'none';
-            });
-            ['tabOverview', 'tabLogs', 'tabIntents', 'tabManage'].forEach(id => {
-                document.getElementById(id).className = 'py-4 px-2 border-b-2 font-medium text-sm transition-colors tab-inactive';
-            });
-            
-            document.getElementById(tab + 'Tab').style.display = 'block';
-            document.getElementById('tab' + tab.charAt(0).toUpperCase() + tab.slice(1)).className = 'py-4 px-2 border-b-2 font-medium text-sm transition-colors tab-active';
-        }
-
-        function refreshData() {
-            loadDashboard();
-            alert('Data berhasil direfresh! 🔄');
-        }
-
-// Lanjutan dari PART 7 - FINAL PART
-        async function showAddIntentModal() {
-            document.getElementById('modalTitle').textContent = 'Tambah Intent & Response Baru';
-            document.getElementById('intentName').value = '';
-            document.getElementById('intentPatterns').value = '';
-            document.getElementById('intentResponseKey').value = '';
-            document.getElementById('intentResponseText').value = '';
-            document.getElementById('intentEntities').value = '';
-            document.getElementById('intentQuickReplies').value = '';
-            document.getElementById('editingIntent').value = '';
-            document.getElementById('intentModal').classList.add('active');
-        }
-
-        async function editIntent(intent) {
-            document.getElementById('modalTitle').textContent = 'Edit Intent & Response';
-            document.getElementById('intentName').value = intent.intent;
-            document.getElementById('intentPatterns').value = intent.patterns.join('\n');
-            document.getElementById('intentResponseKey').value = intent.response_key;
-            document.getElementById('intentEntities').value = (intent.entities || []).join(', ');
-            document.getElementById('editingIntent').value = intent.intent;
-            
-            // Load response text
-            try {
-                const response = await fetch(`${API_URL}/admin/responses/${intent.response_key}`, {
-                    headers: { 'Authorization': `Bearer ${authToken}` }
-                });
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    document.getElementById('intentResponseText').value = data.response.text || '';
-                    document.getElementById('intentQuickReplies').value = (data.response.quick_replies || []).join(', ');
-                }
-            } catch (error) {
-                console.error('Error loading response:', error);
-            }
-            
-            document.getElementById('intentModal').classList.add('active');
-        }
-
-        function closeIntentModal() {
-            document.getElementById('intentModal').classList.remove('active');
-        }
-
-        async function handleSaveIntent(event) {
-            event.preventDefault();
-            
-            const intentName = document.getElementById('intentName').value.trim();
-            const patterns = document.getElementById('intentPatterns').value.split('\n').map(p => p.trim()).filter(p => p);
-            const responseKey = document.getElementById('intentResponseKey').value.trim();
-            const responseText = document.getElementById('intentResponseText').value.trim();
-            const entities = document.getElementById('intentEntities').value.split(',').map(e => e.trim()).filter(e => e);
-            const quickReplies = document.getElementById('intentQuickReplies').value.split(',').map(q => q.trim()).filter(q => q);
-            const editing = document.getElementById('editingIntent').value;
-            
-            if (!intentName || patterns.length === 0 || !responseKey || !responseText) {
-                alert('Semua field bertanda * harus diisi!');
-                return;
-            }
-            
-            const intentData = {
-                intent: intentName,
-                patterns: patterns,
-                response_key: responseKey,
-                entities: entities
-            };
-            
-            const responseData = {
-                text: responseText,
-                quick_replies: quickReplies
-            };
-            
-            try {
-                // Save intent
-                const intentUrl = editing ? `${API_URL}/admin/intents/${editing}` : `${API_URL}/admin/intents`;
-                const intentMethod = editing ? 'PUT' : 'POST';
-                
-                const intentResponse = await fetch(intentUrl, {
-                    method: intentMethod,
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${authToken}`
-                    },
-                    body: JSON.stringify(intentData)
-                });
-                
-                if (!intentResponse.ok) {
-                    const error = await intentResponse.json();
-                    alert('Error menyimpan intent: ' + error.error);
-                    return;
-                }
-                
-                // Save response
-                const responseResponse = await fetch(`${API_URL}/admin/responses/${responseKey}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${authToken}`
-                    },
-                    body: JSON.stringify(responseData)
-                });
-                
-                if (!responseResponse.ok) {
-                    const error = await responseResponse.json();
-                    alert('Error menyimpan response: ' + error.error);
-                    return;
-                }
-                
-                alert(editing ? 'Intent & Response berhasil diupdate! ✅' : 'Intent & Response berhasil ditambahkan! ✅');
-                closeIntentModal();
-                fetchIntentsForManagement();
-                
-            } catch (error) {
-                alert('Gagal menyimpan: ' + error.message);
-            }
-        }
-
-        async function deleteIntent(intentName) {
-            if (!confirm(`Yakin ingin menghapus intent "${intentName}"?\n\nResponse untuk intent ini tidak akan dihapus.`)) return;
-            
-            try {
-                const response = await fetch(`${API_URL}/admin/intents/${intentName}`, {
-                    method: 'DELETE',
-                    headers: { 'Authorization': `Bearer ${authToken}` }
-                });
-                
-                if (response.ok) {
-                    alert('Intent berhasil dihapus! ✅');
-                    fetchIntentsForManagement();
-                } else {
-                    const error = await response.json();
-                    alert('Gagal menghapus intent: ' + error.error);
-                }
-            } catch (error) {
-                alert('Error: ' + error.message);
-            }
-        }
-    </script>
+    <script src="/dashboard/dashboard.js"></script>
 </body>
 </html>

@@ -29,6 +29,16 @@
       "status": "Tersedia",
       "lokasi": "Rak B1-08",
       "kategori": "Governance"
+    },
+    {
+      "id": "BK004",
+      "judul": "Dasar dasar audit",
+      "penulis": "Dr. Sri Mulyani",
+      "tahun": "2023",
+      "penerbit": "Gramedia",
+      "status": "Dipinjam",
+      "lokasi": "Rak B1-08",
+      "kategori": "Auditing"
     }
   ],
   "study_buddy_availability": [

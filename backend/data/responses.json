@@ -2,67 +2,127 @@
   "responses": {
     "jam_operasional": {
       "text": "📅 **Jam Operasional Perpustakaan BPK RI:**\n\n• Senin - Jumat: 08.00 - 16.00 WIB\n• Istirahat: 12.00 - 13.00 WIB\n• Sabtu & Minggu: LIBUR\n• Hari Libur Nasional: TUTUP\n\nℹ️ Layanan digital kami tersedia 24/7 melalui website library.bpk.go.id",
-      "quick_replies": ["Lokasi Perpustakaan", "Cara Pinjam Buku", "Fasilitas"]
+      "quick_replies": [
+        "Lokasi Perpustakaan",
+        "Cara Pinjam Buku",
+        "Fasilitas"
+      ]
     },
     "lokasi": {
       "text": "📍 **Lokasi Perpustakaan BPK RI:**\n\n🏢 Gedung Utama BPK RI\n📍 Jl. Gatot Subroto Kav. 31, Jakarta Pusat 10210\n🔢 Lantai 1 (Sayap Timur)\n\n🚗 **Akses:**\n• TransJakarta: Halte Patra Kuningan\n• MRT: Stasiun Istora Mandiri (15 menit jalan kaki)\n• Parkir tersedia di basement gedung\n\n💡 Tip: Tunjukkan kartu identitas di lobby untuk akses ke perpustakaan",
-      "quick_replies": ["Jam Buka", "Cara Pinjam Buku"]
+      "quick_replies": [
+        "Jam Buka",
+        "Cara Pinjam Buku"
+      ]
     },
     "peminjaman_buku": {
       "text": "📚 **Prosedur Peminjaman Buku:**\n\n✅ **Syarat:**\n• Pegawai BPK RI aktif\n• Memiliki kartu anggota perpustakaan\n• Tidak memiliki tunggakan denda\n\n📖 **Ketentuan:**\n• Maksimal: 3 buku per anggota\n• Durasi: 7 hari (dapat diperpanjang 1x)\n• Perpanjangan: melalui SiPuspa atau langsung ke perpustakaan\n\n⚠️ **Denda Keterlambatan:**\nRp 1.000 per hari per buku\n\n🔄 **Cara Perpanjang:**\nLogin SiPuspa → Profil Saya → Pinjaman Aktif → Perpanjang",
-      "quick_replies": ["Cari Koleksi", "Daftar Anggota", "Lokasi"]
+      "quick_replies": [
+        "Cari Koleksi",
+        "Daftar Anggota",
+        "Lokasi"
+      ]
     },
     "koleksi": {
       "text": "📚 **Koleksi Perpustakaan BPK RI:**\n\n📖 **Jenis Koleksi:**\n• Buku teks (15.000+ judul)\n• Jurnal ilmiah (lokal & internasional)\n• Laporan hasil pemeriksaan BPK\n• E-book & E-journal\n• Peraturan perundang-undangan\n• Koleksi multimedia\n\n🔍 **Cara Mencari:**\n1. Kunjungi: library.bpk.go.id\n2. Klik \"Pencarian Koleksi\"\n3. Masukkan kata kunci (judul/penulis/subjek)\n\n💡 **Koleksi Populer:**\n• Akuntansi sektor publik\n• Auditing & pemeriksaan\n• Keuangan negara\n• Good governance\n\nBisa saya bantu mencari buku tertentu?",
-      "quick_replies": ["Cara Pinjam", "Koleksi Digital", "E-Resources"]
+      "quick_replies": [
+        "Cara Pinjam",
+        "Koleksi Digital",
+        "E-Resources"
+      ]
     },
     "sarana_prasarana": {
       "text": "🏢 **Fasilitas Perpustakaan BPK RI:**\n\n✨ **Ruang Baca:**\n• Area baca nyaman (50 kursi)\n• AC & pencahayaan optimal\n• Akses WiFi gratis\n\n💼 **Study Buddy (Ruang Diskusi):**\n• 3 ruang tersedia\n• Kapasitas: 4-6 orang per ruang\n• Whiteboard & proyektor\n• Perlu reservasi via SiPuspa\n\n💻 **Fasilitas Digital:**\n• 10 unit komputer penelusuran\n• Printer & scanner\n• Akses database online\n\n🔒 **Lainnya:**\n• Loker penyimpanan tas\n• Area fotokopi\n• Ruang multimedia",
-      "quick_replies": ["Booking Study Buddy", "Jam Buka", "Lokasi"]
+      "quick_replies": [
+        "Booking Study Buddy",
+        "Jam Buka",
+        "Lokasi"
+      ]
     },
     "usulan_buku": {
       "text": "📝 **Usulan Koleksi Baru:**\n\n✅ **Cara Mengusulkan:**\n1. Login ke SiPuspa (library.bpk.go.id)\n2. Menu \"Usulan Koleksi\"\n3. Isi formulir:\n   - Judul buku\n   - Penulis/editor\n   - Penerbit & tahun\n   - Alasan pengajuan\n4. Submit usulan\n\n⏱️ **Proses:**\n• Review oleh tim kurator: 7-14 hari\n• Notifikasi via email\n• Jika disetujui, buku akan diadakan\n\n💡 **Tips Usulan Diterima:**\n• Relevan dengan bidang kerja BPK\n• Terbitan terbaru (max 5 tahun)\n• Sertakan justifikasi yang jelas\n\nIngin saya buatkan link formulir usulan?",
-      "quick_replies": ["Cek Status Usulan", "Koleksi Terbaru"]
+      "quick_replies": [
+        "Cek Status Usulan",
+        "Koleksi Terbaru"
+      ]
     },
     "acara": {
       "text": "🎉 **Events & Kegiatan Perpustakaan:**\n\n📅 **Kegiatan Rutin:**\n• Literasi Bulanan (setiap Kamis minggu ke-2)\n• Bedah Buku (per semester)\n• Workshop Riset & Publikasi\n• Pelatihan Sitasi & Referensi\n\n🔔 **Cara Mendaftar:**\n1. Pantau website: library.bpk.go.id/events\n2. Cek Instagram: @perpusbpk\n3. Notifikasi via email SiPuspa\n\n📢 **Acara Mendatang (November 2025):**\n• 28 Nov: Workshop Mendeley\n  Pemateri: Dr. Andi Saputra\n  Tempat: Ruang Multimedia\n  Waktu: 13.00-15.00 WIB\n\nIngin saya kirimkan link pendaftaran?",
-      "quick_replies": ["Daftar Acara", "Acara Bulan Depan"]
+      "quick_replies": [
+        "Daftar Acara",
+        "Acara Bulan Depan"
+      ]
     },
     "study_buddy": {
       "text": "💼 **Reservasi Study Buddy:**\n\n📋 **Ketentuan:**\n• Khusus pegawai BPK RI\n• Booking H-1 s/d H-7\n• Maksimal 3 jam per booking\n• Kapasitas: 4-6 orang\n\n📱 **Cara Booking:**\n1. Login SiPuspa\n2. Menu \"Reservasi Ruang\"\n3. Pilih tanggal & jam\n4. Pilih ruang (A/B/C)\n5. Submit booking\n\n⏰ **Jam Tersedia:**\n• Senin-Jumat: 08.00-16.00 WIB\n• Slot: 08.00, 11.00, 13.00\n\n✨ **Fasilitas:**\n• Whiteboard + spidol\n• Proyektor + HDMI\n• AC & WiFi\n\n⚠️ Batalkan minimal 2 jam sebelum jadwal jika berhalangan",
-      "quick_replies": ["Booking Sekarang", "Cek Ketersediaan"]
+      "quick_replies": [
+        "Booking Sekarang",
+        "Cek Ketersediaan"
+      ]
     },
     "akreditasi": {
       "text": "🏆 **Status Akreditasi Perpustakaan BPK RI:**\n\n✅ **Akreditasi Nasional:**\n• Terakreditasi \"A\" oleh Perpustakaan Nasional RI\n• Tahun: 2023\n• Masa berlaku: 2023-2028\n\n📊 **Standar yang Dipenuhi:**\n• Koleksi perpustakaan\n• Sarana & prasarana\n• Pelayanan perpustakaan\n• Tenaga perpustakaan\n• Penyelenggaraan perpustakaan\n• Pengelolaan perpustakaan\n\n🎖️ **Sertifikasi:**\n• ISO 9001:2015 (Manajemen Mutu)\n• SNI Perpustakaan Khusus\n\n💡 Perpustakaan BPK RI berkomitmen memberikan layanan berkualitas tinggi",
-      "quick_replies": ["Fasilitas", "Koleksi"]
+      "quick_replies": [
+        "Fasilitas",
+        "Koleksi"
+      ]
     },
     "kontak": {
       "text": "📞 **Hubungi Kami:**\n\n📧 **Email:**\nperpustakaan@bpk.go.id\n\n☎️ **Telepon:**\n(021) 2554 9000 ext. 5120\n\n💬 **WhatsApp:**\n0812-8888-5120 (Chat only)\n\n🌐 **Website:**\nlibrary.bpk.go.id\n\n📱 **Social Media:**\nInstagram: @perpusbpk\nTwitter: @PerpusBPK\n\n⏰ **Jam Layanan:**\nSenin-Jumat: 08.00-16.00 WIB\n\n📍 **Alamat:**\nGedung BPK RI, Lantai 1\nJl. Gatot Subroto Kav. 31\nJakarta Pusat 10210",
-      "quick_replies": ["Lokasi", "Jam Buka"]
+      "quick_replies": [
+        "Lokasi",
+        "Jam Buka"
+      ]
     },
     "keanggotaan": {
       "text": "👤 **Keanggotaan Perpustakaan:**\n\n✅ **Syarat Anggota:**\n• Pegawai BPK RI (PNS/PPPK/Honorer)\n• Mengisi formulir pendaftaran\n• Foto 3x4 (1 lembar)\n• Fotokopi KTP/ID Card BPK\n\n📝 **Cara Daftar:**\n1. Datang ke perpustakaan\n2. Isi formulir di meja layanan\n3. Serahkan persyaratan\n4. Foto untuk kartu anggota\n5. Kartu jadi: 3 hari kerja\n\n💳 **Biaya:**\nGRATIS (tidak ada biaya pendaftaran)\n\n🔄 **Perpanjangan:**\nOtomatis setiap tahun (selama masih pegawai aktif)\n\n❗ **Kartu Hilang:**\n• Lapor ke perpustakaan\n• Biaya penggantian: Rp 20.000",
-      "quick_replies": ["Daftar Sekarang", "Cara Pinjam Buku"]
+      "quick_replies": [
+        "Daftar Sekarang",
+        "Cara Pinjam Buku"
+      ]
     },
     "denda": {
       "text": "⚠️ **Keterlambatan & Denda:**\n\n💰 **Tarif Denda:**\nRp 1.000 per hari per buku\n\n📊 **Contoh Perhitungan:**\n• Telat 3 hari, 2 buku = Rp 6.000\n• Telat 1 minggu, 1 buku = Rp 7.000\n\n💳 **Cara Pembayaran:**\n1. Datang ke perpustakaan\n2. Bayar di kasir/petugas\n3. Terima bukti pembayaran\n4. Simpan untuk arsip\n\n🚫 **Konsekuensi Tunggakan:**\n• Tidak bisa pinjam buku baru\n• Akun SiPuspa dibatasi\n• Perpanjangan tidak bisa dilakukan\n\n💡 **Tips Hindari Denda:**\n• Set reminder di kalender\n• Manfaatkan fitur perpanjangan online\n• Perpanjang H-1 jika masih diperlukan\n\n❓ Butuh info saldo denda? Login ke SiPuspa",
-      "quick_replies": ["Cek Denda Saya", "Cara Perpanjang"]
+      "quick_replies": [
+        "Cek Denda Saya",
+        "Cara Perpanjang"
+      ]
     },
     "salam": {
       "text": "Halo! 👋 Selamat datang di Layanan Informasi Perpustakaan BPK RI.\n\nSaya adalah asisten virtual yang siap membantu Anda 24/7. Saya dapat membantu dengan:\n\n• 📍 Informasi lokasi & jam operasional\n• 📚 Pencarian koleksi & peminjaman\n• 🏢 Fasilitas & reservasi ruangan\n• 📅 Jadwal acara & kegiatan\n• 💳 Keanggotaan & layanan lainnya\n\nAda yang bisa saya bantu hari ini?",
-      "quick_replies": ["Jam Buka", "Cara Pinjam Buku", "Fasilitas", "Cari Koleksi"]
+      "quick_replies": [
+        "Jam Buka",
+        "Cara Pinjam Buku",
+        "Fasilitas",
+        "Cari Koleksi"
+      ]
     },
     "terima_kasih": {
       "text": "Sama-sama! 😊 Senang bisa membantu Anda.\n\nJika ada pertanyaan lain seputar Perpustakaan BPK RI, jangan ragu untuk bertanya ya!\n\n📚 Selamat membaca dan semoga informasinya bermanfaat! ✨",
-      "quick_replies": ["Menu Utama", "Kontak Perpustakaan"]
+      "quick_replies": [
+        "Menu Utama",
+        "Kontak Perpustakaan"
+      ]
     },
     "lainnya": {
       "text": "💬 **Kritik, Saran & Feedback:**\n\nTerima kasih ingin memberikan masukan untuk perpustakaan kami!\n\n📝 **Cara Menyampaikan:**\n\n1. **Form Online:**\n   library.bpk.go.id/feedback\n\n2. **Email:**\n   perpustakaan@bpk.go.id\n\n3. **Kotak Saran:**\n   Tersedia di meja layanan perpustakaan\n\n4. **WhatsApp:**\n   0812-8888-5120\n\nSemua masukan akan kami review dan ditindaklanjuti untuk peningkatan layanan.\n\nApakah ada hal lain yang bisa saya bantu?",
-      "quick_replies": ["Kirim Feedback", "Menu Utama"]
+      "quick_replies": [
+        "Kirim Feedback",
+        "Menu Utama"
+      ]
     },
     "not_understood": {
       "text": "Maaf, saya kurang memahami pertanyaan Anda 😅\n\nBerikut beberapa topik yang bisa saya bantu:\n\n📌 **Informasi Umum:**\n• Jam operasional & lokasi\n• Kontak perpustakaan\n\n📚 **Layanan:**\n• Peminjaman & pengembalian buku\n• Pencarian koleksi\n• Keanggotaan\n\n🏢 **Fasilitas:**\n• Ruang baca & study buddy\n• Fasilitas digital\n\n📅 **Kegiatan:**\n• Jadwal acara & workshop\n\nBisa tolong diulang dengan kata lain? Atau pilih salah satu topik di atas 🙏",
-      "quick_replies": ["Jam Buka", "Cara Pinjam", "Fasilitas", "Kontak"]
+      "quick_replies": [
+        "Jam Buka",
+        "Cara Pinjam",
+        "Fasilitas",
+        "Kontak"
+      ]
+    },
+    "fotokopi_scan": {
+      "text": "💬 **Kritik, Saran & Feedback:**\n\nTerima kasih ingin memberikan masukan untuk perpustakaan kami!\n\n📝 **Cara Menyampaikan:**\n\n1. **Form Online:**\n   library.bpk.go.id/feedback\n\n2. **Email:**\n   perpustakaan@bpk.go.id\n\n3. **Kotak Saran:**\n   Tersedia di meja layanan perpustakaan\n\n4. **WhatsApp:**\n   0812-8888-5120\n\nSemua masukan akan kami review dan ditindaklanjuti untuk peningkatan layanan.\n\nApakah ada hal lain yang bisa saya bantu?",
+      "quick_replies": []
     }
   }
 }

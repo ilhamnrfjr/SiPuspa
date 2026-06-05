@@ -90,7 +90,7 @@ class NLUEngine:
         token_set_score = fuzz.token_set_ratio(text1, text2)
         
         # Weighted average
-        similarity = (token_sort_score * 0.4 + partial_score * 0.3 + token_set_score * 0.3)
+        similarity = (token_sort_score * 0.5 + partial_score * 0.2 + token_set_score * 0.3)
         
         return similarity / 100  # Normalize to 0-1
     
@@ -107,6 +107,9 @@ class NLUEngine:
         
         # Remove stopwords
         filtered_tokens = self.remove_stopwords(tokens)
+
+        if len(filtered_tokens) == 0:
+            return {'intent': 'not_understood', 'confidence': 0.0, 'matched_pattern': None}
         
         # Stem tokens
         stemmed_tokens = self.stem_tokens(filtered_tokens)
@@ -140,7 +143,7 @@ class NLUEngine:
                     }
         
         # Set threshold minimum confidence
-        if best_match['confidence'] < 0.5:
+        if best_match['confidence'] < 0.70:
             best_match['intent'] = 'not_understood'
             best_match['confidence'] = 0.0
         

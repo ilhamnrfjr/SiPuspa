@@ -1,0 +1,161 @@
+kalimat,intent
+Perpustakaan buka jam berapa,jam_operasional
+Jam operasional perpustakaan hari ini,jam_operasional
+Perpustakaan tutup jam berapa,jam_operasional
+Jadwal buka perpustakaan minggu ini,jam_operasional
+Hari apa saja perpustakaan buka,jam_operasional
+Apakah sabtu perpustakaan buka,jam_operasional
+Jam layanan perpustakaan BPK RI,jam_operasional
+Perpustakaan buka sampai jam berapa sore,jam_operasional
+Apakah minggu perpustakaan buka,jam_operasional
+Perpustakaan libur hari apa saja,jam_operasional
+Di mana lokasi perpustakaan BPK RI,lokasi
+Alamat perpustakaan BPK RI,lokasi
+Perpustakaan ada di mana,lokasi
+Perpustakaan berada di lantai berapa,lokasi
+Gedung apa yang ditempati perpustakaan,lokasi
+Bagaimana cara menuju perpustakaan,lokasi
+Di mana letak perpustakaan BPK,lokasi
+Posisi perpustakaan BPK RI di mana,lokasi
+Perpustakaan di gedung mana,lokasi
+Ruangan perpustakaan ada di gedung apa,lokasi
+Cara pinjam buku di perpustakaan,peminjaman_buku
+Prosedur peminjaman buku,peminjaman_buku
+Apa saja syarat pinjam buku,peminjaman_buku
+Bagaimana cara meminjam buku,peminjaman_buku
+Ketentuan peminjaman buku perpustakaan,peminjaman_buku
+Berapa lama durasi peminjaman buku,peminjaman_buku
+Berapa lama bisa pinjam buku,peminjaman_buku
+Maksimal pinjam berapa buku sekaligus,peminjaman_buku
+Cara perpanjang pinjaman buku,peminjaman_buku
+Bagaimana cara perpanjangan buku,peminjaman_buku
+Koleksi buku apa saja yang tersedia,koleksi
+Saya ingin cari buku tentang hukum,koleksi
+Apakah ada buku akuntansi,koleksi
+Koleksi terbaru perpustakaan apa saja,koleksi
+Ada buku berbahasa inggris tidak,koleksi
+Jurnal apa saja yang tersedia,koleksi
+Koleksi digital perpustakaan apa saja,koleksi
+Apakah tersedia e-book di perpustakaan,koleksi
+Ada database online perpustakaan tidak,koleksi
+Bagaimana cara pencarian koleksi buku,koleksi
+Fasilitas apa saja di perpustakaan,sarana_prasarana
+Apakah ada ruang baca di perpustakaan,sarana_prasarana
+Ruang diskusi perpustakaan tersedia tidak,sarana_prasarana
+Apakah ada study buddy di perpustakaan,sarana_prasarana
+Wifi perpustakaan BPK RI ada tidak,sarana_prasarana
+Komputer perpustakaan bisa digunakan tidak,sarana_prasarana
+Apakah tersedia loker di perpustakaan,sarana_prasarana
+Sarana dan prasarana perpustakaan apa saja,sarana_prasarana
+Apakah ada ruang multimedia perpustakaan,sarana_prasarana
+Ada area santai di perpustakaan tidak,sarana_prasarana
+Bagaimana cara mengusulkan buku baru,usulan_buku
+Prosedur usulan koleksi baru perpustakaan,usulan_buku
+Cara request buku ke perpustakaan,usulan_buku
+Bagaimana cara mengajukan buku baru,usulan_buku
+Di mana form usulan buku,usulan_buku
+Apa prosedur untuk mengusulkan buku,usulan_buku
+Saya ingin memberi saran pembelian buku,usulan_buku
+Bagaimana cara mengusulkan buku baru ke perpustakaan,usulan_buku
+Apakah bisa mengusulkan pengadaan buku,usulan_buku
+Cara mengajukan usulan koleksi perpustakaan,usulan_buku
+Jadwal kegiatan perpustakaan bulan ini,acara
+Acara apa saja di perpustakaan,acara
+Ada seminar tidak bulan ini,acara
+Workshop perpustakaan kapan diadakan,acara
+Apakah ada pelatihan literasi,acara
+Informasi events perpustakaan,acara
+Kegiatan apa saja yang diadakan perpustakaan,acara
+Kapan ada seminar di perpustakaan,acara
+Acara perpustakaan mendatang apa saja,acara
+Jadwal workshop perpustakaan bulan ini,acara
+Cara booking study buddy perpustakaan,study_buddy
+Bagaimana cara booking ruang diskusi,study_buddy
+Cara reservasi ruang study buddy,study_buddy
+Saya ingin pesan study room,study_buddy
+Berapa kapasitas ruang study buddy,study_buddy
+Fasilitas apa saja di study buddy,study_buddy
+Jam berapa bisa booking ruang study buddy,study_buddy
+Bagaimana cara memesan ruang belajar,study_buddy
+Prosedur booking ruang diskusi perpustakaan,study_buddy
+Cara reservasi ruangan untuk belajar bersama,study_buddy
+Bagaimana status akreditasi perpustakaan,akreditasi
+Apakah perpustakaan sudah terakreditasi,akreditasi
+Di mana bisa lihat sertifikat akreditasi perpustakaan,akreditasi
+Apa standar perpustakaan BPK RI,akreditasi
+Apakah perpustakaan memiliki akreditasi nasional,akreditasi
+Bagaimana kualitas perpustakaan BPK RI,akreditasi
+Perpustakaan BPK RI sudah terakreditasi belum,akreditasi
+Sertifikasi apa yang dimiliki perpustakaan,akreditasi
+Apakah perpustakaan sudah berstandar nasional,akreditasi
+Akreditasi perpustakaan BPK RI apa,akreditasi
+Nomor telepon perpustakaan BPK RI berapa,kontak
+Apa email perpustakaan BPK RI,kontak
+Bagaimana cara menghubungi perpustakaan,kontak
+Kontak perpustakaan BPK RI,kontak
+Siapa contact person perpustakaan,kontak
+Ada whatsapp perpustakaan tidak,kontak
+Nomor yang bisa dihubungi perpustakaan,kontak
+Cara menghubungi petugas perpustakaan,kontak
+Email resmi perpustakaan BPK RI,kontak
+Alamat email perpustakaan untuk dihubungi,kontak
+Cara daftar menjadi anggota perpustakaan,keanggotaan
+Syarat menjadi anggota perpustakaan,keanggotaan
+Bagaimana cara pendaftaran member perpustakaan,keanggotaan
+Berapa biaya keanggotaan perpustakaan,keanggotaan
+Kartu anggota saya hilang bagaimana,keanggotaan
+Cara perpanjang keanggotaan perpustakaan,keanggotaan
+Prosedur mendaftar anggota perpustakaan,keanggotaan
+Apa saja syarat pendaftaran anggota,keanggotaan
+Bagaimana cara membuat kartu anggota,keanggotaan
+Cara registrasi sebagai anggota perpustakaan,keanggotaan
+Berapa denda jika telat mengembalikan buku,denda
+Berapa biaya denda keterlambatan,denda
+Denda perpustakaan berapa per hari,denda
+Sanksi jika terlambat mengembalikan buku,denda
+Bagaimana cara membayar denda perpustakaan,denda
+Denda buku terlambat berapa rupiah,denda
+Jika telat kembalikan buku kena denda berapa,denda
+Cara bayar denda keterlambatan buku,denda
+Apakah ada denda jika buku terlambat dikembalikan,denda
+Berapa biaya denda buku per hari,denda
+Halo selamat pagi,salam
+Hai ada yang bisa dibantu,salam
+Hi selamat siang,salam
+Hello perpustakaan,salam
+Selamat pagi,salam
+Selamat siang,salam
+Selamat sore,salam
+Selamat malam,salam
+Assalamualaikum,salam
+Halo PUSPA,salam
+Terima kasih informasinya,terima_kasih
+Makasih ya,terima_kasih
+Thanks banyak,terima_kasih
+Thank you,terima_kasih
+Terimakasih banyak,terima_kasih
+Makasih atas bantuannya,terima_kasih
+Terima kasih sudah membantu,terima_kasih
+Thanks atas informasinya,terima_kasih
+Terima kasih banyak ya,terima_kasih
+Makasih infonya,terima_kasih
+Saya ingin memberikan saran untuk perpustakaan,lainnya
+Ada kritik dan saran untuk layanan,lainnya
+Saya ingin menyampaikan feedback,lainnya
+Ada keluhan terkait layanan perpustakaan,lainnya
+Saya ingin komplain soal pelayanan,lainnya
+Saran saya untuk perpustakaan BPK RI,lainnya
+Ingin menyampaikan masukan untuk perpustakaan,lainnya
+Ada yang ingin saya sampaikan sebagai feedback,lainnya
+Perpustakaan perlu meningkatkan layanan,lainnya
+Saya memiliki keluhan mengenai fasilitas,lainnya
+Cara akses e-journal perpustakaan,layanan_digital
+Layanan digital perpustakaan apa saja,layanan_digital
+Akses SiPuspa online bagaimana,layanan_digital
+Cara login SiPuspa,layanan_digital
+Ada e-book di perpustakaan tidak,layanan_digital
+Cara download e-book perpustakaan,layanan_digital
+Cara menggunakan layanan digital perpustakaan,layanan_digital
+Akses jurnal online perpustakaan,layanan_digital
+Cara akses koleksi digital perpustakaan,layanan_digital
+Portal digital perpustakaan BPK RI,layanan_digital

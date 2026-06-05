@@ -15,7 +15,6 @@ class Database:
         conn = self.get_connection()
         cursor = conn.cursor()
         
-        # Tabel untuk log percakapan
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS conversation_logs (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -29,7 +28,6 @@ class Database:
             )
         ''')
         
-        # Tabel untuk FAQ management
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS faq_management (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -42,7 +40,6 @@ class Database:
             )
         ''')
         
-        # Tabel untuk feedback pengguna
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS user_feedback (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -55,7 +52,6 @@ class Database:
             )
         ''')
         
-        # Tabel untuk analytics
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS analytics (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -135,14 +131,13 @@ class Database:
         cursor.execute('SELECT AVG(response_time) FROM conversation_logs')
         avg_response_time = cursor.fetchone()[0] or 0
         
-        # Top intents
+        # Semua intent — tanpa LIMIT agar chart dinamis mengikuti jumlah intent aktual
         cursor.execute('''
             SELECT intent_detected, COUNT(*) as count
             FROM conversation_logs
             WHERE intent_detected IS NOT NULL
             GROUP BY intent_detected
             ORDER BY count DESC
-            LIMIT 10
         ''')
         top_intents = [{'intent': row[0], 'count': row[1]} for row in cursor.fetchall()]
         
@@ -170,7 +165,196 @@ class Database:
             'top_intents': top_intents,
             'messages_per_day': messages_per_day
         }
-    
+
+    def get_hourly_activity(self):
+        """
+        Aktivitas per jam dalam seminggu terakhir.
+        Return: list of {hour: 0-23, count: N}
+        """
+        conn = self.get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute('''
+            SELECT CAST(strftime('%H', timestamp) AS INTEGER) as hour,
+                   COUNT(*) as count
+            FROM conversation_logs
+            WHERE timestamp >= datetime('now', '-7 days')
+            GROUP BY hour
+            ORDER BY hour
+        ''')
+        rows = cursor.fetchall()
+        conn.close()
+
+        # Pastikan semua 24 jam terisi (jam kosong = 0)
+        hour_map = {row[0]: row[1] for row in rows}
+        return [{'hour': h, 'count': hour_map.get(h, 0)} for h in range(24)]
+
+    def get_intent_confidence_stats(self):
+        """
+        Rata-rata confidence dan jumlah kemunculan per intent.
+        Berguna untuk mendeteksi intent yang perlu diperbaiki patternnya.
+        Return: list of {intent, avg_confidence, count}
+        """
+        conn = self.get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute('''
+            SELECT intent_detected,
+                   ROUND(AVG(confidence), 3) as avg_confidence,
+                   COUNT(*) as count
+            FROM conversation_logs
+            WHERE intent_detected IS NOT NULL
+              AND confidence IS NOT NULL
+            GROUP BY intent_detected
+            ORDER BY avg_confidence ASC
+        ''')
+        rows = cursor.fetchall()
+        conn.close()
+
+        return [
+            {
+                'intent': row[0],
+                'avg_confidence': row[1],
+                'count': row[2]
+            }
+            for row in rows
+        ]
+
+    def get_session_detail(self, session_id):
+        """
+        Ambil semua pesan dalam 1 session, diurutkan chronologis.
+        Return: {session_id, messages: [...], summary: {total, first_time, last_time, intents}}
+        """
+        conn = self.get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute('''
+            SELECT id, user_message, bot_response, intent_detected,
+                   confidence, response_time, timestamp
+            FROM conversation_logs
+            WHERE session_id = ?
+            ORDER BY timestamp ASC
+        ''', (session_id,))
+        rows = cursor.fetchall()
+        conn.close()
+
+        if not rows:
+            return None
+
+        messages = [
+            {
+                'id':            row[0],
+                'user_message':  row[1],
+                'bot_response':  row[2],
+                'intent':        row[3],
+                'confidence':    row[4],
+                'response_time': row[5],
+                'timestamp':     row[6]
+            }
+            for row in rows
+        ]
+
+        intents_used = list(dict.fromkeys(
+            m['intent'] for m in messages if m['intent']
+        ))
+
+        return {
+            'session_id': session_id,
+            'messages':   messages,
+            'summary': {
+                'total_messages': len(messages),
+                'first_time':     messages[0]['timestamp'],
+                'last_time':      messages[-1]['timestamp'],
+                'intents_used':   intents_used
+            }
+        }
+
+    def get_sessions_list(self):
+        """
+        Ambil daftar session diurutkan terbaru, 1 baris per session.
+        Return: list of {session_id, first_time, last_time, total_messages, intents_used}
+        """
+        conn = self.get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute('''
+            SELECT
+                session_id,
+                MIN(timestamp)  AS first_time,
+                MAX(timestamp)  AS last_time,
+                COUNT(*)        AS total_messages,
+                GROUP_CONCAT(DISTINCT intent_detected) AS intents_raw
+            FROM conversation_logs
+            GROUP BY session_id
+            ORDER BY last_time DESC
+        ''')
+        rows = cursor.fetchall()
+        conn.close()
+
+        result = []
+        for row in rows:
+            intents_raw = row[4] or ''
+            intents = [i.strip() for i in intents_raw.split(',') if i.strip()]
+            result.append({
+                'session_id':     row[0],
+                'first_time':     row[1],
+                'last_time':      row[2],
+                'total_messages': row[3],
+                'intents_used':   intents
+            })
+        return result
+
+    def get_all_logs_for_backup(self):
+        """Ambil semua log tanpa limit untuk keperluan backup."""
+        conn = self.get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute('''
+            SELECT id, session_id, user_message, bot_response, intent_detected,
+                   confidence, response_time, timestamp
+            FROM conversation_logs
+            ORDER BY timestamp DESC
+        ''')
+        rows = cursor.fetchall()
+        conn.close()
+
+        return [
+            {
+                'id':            row[0],
+                'session_id':    row[1],
+                'user_message':  row[2],
+                'bot_response':  row[3],
+                'intent':        row[4],
+                'confidence':    row[5],
+                'response_time': row[6],
+                'timestamp':     row[7]
+            }
+            for row in rows
+        ]
+
+    def delete_all_logs(self):
+        """Hapus seluruh history percakapan."""
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        cursor.execute('DELETE FROM conversation_logs')
+        deleted = cursor.rowcount
+        conn.commit()
+        conn.close()
+        return deleted
+
+    def delete_session_logs(self, session_id):
+        """Hapus semua pesan dalam 1 session."""
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        cursor.execute(
+            'DELETE FROM conversation_logs WHERE session_id = ?',
+            (session_id,)
+        )
+        deleted = cursor.rowcount
+        conn.commit()
+        conn.close()
+        return deleted
+
     def save_feedback(self, session_id, message_id, rating, feedback_text):
         """Simpan feedback pengguna"""
         conn = self.get_connection()

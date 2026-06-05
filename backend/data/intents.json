@@ -12,9 +12,22 @@
         "jam layanan",
         "hari apa saja buka",
         "buka hari sabtu",
-        "libur hari apa"
+        "libur hari apa",
+        "jam kerja perpustakaan",
+        "perpustakaan buka sampai jam berapa",
+        "apakah sabtu perpustakaan buka",
+        "apakah minggu perpustakaan buka",
+        "opening hours perpustakaan",
+        "perpustakaan beroperasi jam berapa",
+        "waktu layanan perpustakaan",
+        "jam pelayanan perpustakaan",
+        "kapan perpustakaan mulai buka",
+        "jadwal operasional perpustakaan"
       ],
-      "entities": ["hari", "jam"],
+      "entities": [
+        "hari",
+        "jam"
+      ],
       "response_key": "jam_operasional"
     },
     {
@@ -28,9 +41,23 @@
         "cara ke perpustakaan",
         "dimana letak perpustakaan",
         "posisi perpustakaan",
-        "perpustakaan di gedung mana"
+        "perpustakaan di gedung mana",
+        "ruangan perpustakaan ada di mana",
+        "letak perpustakaan BPK RI",
+        "perpustakaan BPK RI ada di lantai berapa",
+        "bagaimana menuju perpustakaan",
+        "denah perpustakaan",
+        "lokasi gedung perpustakaan",
+        "perpustakaan berada di lantai berapa",
+        "gedung perpustakaan BPK RI",
+        "alamat lengkap perpustakaan BPK",
+        "perpustakaan di gedung berapa",
+        "arah menuju perpustakaan BPK"
       ],
-      "entities": ["gedung", "lantai"],
+      "entities": [
+        "gedung",
+        "lantai"
+      ],
       "response_key": "lokasi"
     },
     {
@@ -45,43 +72,115 @@
         "berapa lama bisa pinjam",
         "maksimal pinjam berapa buku",
         "perpanjangan buku",
-        "cara perpanjang pinjaman"
+        "cara perpanjang pinjaman",
+        "cara mengembalikan buku",
+        "prosedur pengembalian buku",
+        "berapa buku yang bisa dipinjam sekaligus",
+        "cara meminjam buku perpustakaan",
+        "ketentuan pengembalian buku",
+        "batas waktu peminjaman buku",
+        "cara pinjam buku perpustakaan BPK",
+        "syarat peminjaman koleksi",
+        "cara perpanjang masa pinjam",
+        "prosedur pinjam buku perpustakaan"
       ],
-      "entities": ["jenis_koleksi", "durasi"],
+      "entities": [
+        "jenis_koleksi",
+        "durasi"
+      ],
       "response_key": "peminjaman_buku"
     },
     {
       "intent": "koleksi",
       "patterns": [
         "koleksi buku apa saja",
-        "cari buku tentang",
-        "ada buku",
-        "koleksi terbaru",
-        "buku bahasa inggris",
-        "jurnal apa saja",
-        "koleksi digital",
-        "e-book tersedia",
-        "database online",
-        "pencarian koleksi"
+        "cari buku tentang hukum",
+        "ada buku akuntansi",
+        "koleksi terbaru perpustakaan",
+        "buku berbahasa inggris",
+        "jurnal apa saja yang tersedia",
+        "pencarian koleksi buku",
+        "katalog buku perpustakaan",
+        "koleksi buku perpustakaan BPK",
+        "ada buku tentang keuangan negara",
+        "cari referensi buku",
+        "buku apa saja yang ada",
+        "koleksi buku hukum",
+        "koleksi buku terbaru",
+        "ada referensi jurnal tidak",
+        "cari koleksi perpustakaan",
+        "buku yang tersedia di perpustakaan",
+        "koleksi majalah perpustakaan",
+        "ada buku tentang audit",
+        "mencari judul buku tertentu"
       ],
-      "entities": ["judul", "penulis", "tahun_terbit", "bahasa", "subjek"],
+      "entities": [
+        "judul",
+        "penulis",
+        "tahun_terbit",
+        "bahasa",
+        "subjek"
+      ],
       "response_key": "koleksi"
+    },
+    {
+      "intent": "layanan_digital",
+      "patterns": [
+        "koleksi digital perpustakaan",
+        "e-book perpustakaan",
+        "database online perpustakaan",
+        "akses e-journal perpustakaan",
+        "cara akses e-book",
+        "layanan digital perpustakaan",
+        "akses jurnal online",
+        "SiPuspa online",
+        "cara login SiPuspa",
+        "cara download e-book",
+        "perpustakaan digital BPK",
+        "akses koleksi digital",
+        "cara menggunakan layanan digital",
+        "e-resources perpustakaan",
+        "repository perpustakaan",
+        "akses online perpustakaan",
+        "portal digital perpustakaan",
+        "cara akses jurnal elektronik",
+        "langganan database jurnal",
+        "cara pakai sipuspa"
+      ],
+      "entities": [
+        "jenis_digital",
+        "platform"
+      ],
+      "response_key": "layanan_digital"
     },
     {
       "intent": "sarana_prasarana",
       "patterns": [
-        "fasilitas perpustakaan",
-        "ada ruang baca",
+        "fasilitas perpustakaan apa saja",
+        "ada ruang baca tidak",
         "ruang diskusi tersedia",
-        "study buddy",
-        "wifi perpustakaan",
-        "komputer perpustakaan",
-        "loker tersedia",
-        "fasilitas apa saja",
-        "ruang multimedia",
-        "area santai"
+        "wifi perpustakaan ada tidak",
+        "komputer perpustakaan bisa digunakan",
+        "loker perpustakaan tersedia tidak",
+        "ruang multimedia perpustakaan",
+        "area santai perpustakaan",
+        "sarana dan prasarana perpustakaan",
+        "apakah ada printer perpustakaan",
+        "fasilitas ruang perpustakaan",
+        "ada toilet di perpustakaan",
+        "fasilitas ibadah perpustakaan",
+        "musala perpustakaan ada tidak",
+        "ruang baca anak perpustakaan",
+        "prasarana perpustakaan BPK RI",
+        "kursi dan meja belajar perpustakaan",
+        "ruang referensi perpustakaan",
+        "peralatan yang tersedia di perpustakaan",
+        "apakah ada AC di perpustakaan"
       ],
-      "entities": ["jenis_fasilitas", "kapasitas"],
+      "entities": [
+        "jenis_fasilitas",
+        "kapasitas"
+      ],
       "response_key": "sarana_prasarana"
     },
     {
@@ -89,69 +188,147 @@
       "patterns": [
         "cara usul buku",
         "usulan koleksi baru",
-        "request buku",
+        "request buku baru",
         "mengajukan buku baru",
-        "form usulan",
-        "prosedur usulan",
+        "form usulan buku",
+        "prosedur usulan buku",
         "saran pembelian buku",
-        "bagaimana mengusulkan buku"
+        "bagaimana mengusulkan buku",
+        "cara mengajukan pengadaan buku",
+        "mekanisme usulan koleksi",
+        "ingin mengusulkan buku baru",
+        "cara request koleksi baru",
+        "apakah bisa mengusulkan buku",
+        "prosedur pengadaan buku baru",
+        "cara mengajukan usulan buku ke perpustakaan",
+        "mengusulkan pembelian buku perpustakaan",
+        "formulir pengajuan buku baru",
+        "cara mengusulkan koleksi perpustakaan",
+        "bisa usul buku tidak",
+        "bagaimana prosedur usulan pengadaan buku"
       ],
-      "entities": ["judul_usulan", "penulis", "alasan"],
+      "entities": [
+        "judul_usulan",
+        "penulis",
+        "alasan"
+      ],
       "response_key": "usulan_buku"
     },
     {
       "intent": "acara",
       "patterns": [
-        "jadwal kegiatan",
-        "acara perpustakaan",
+        "jadwal kegiatan perpustakaan",
+        "acara perpustakaan bulan ini",
         "seminar bulan ini",
-        "workshop perpustakaan",
-        "pelatihan literasi",
-        "events library",
-        "kegiatan apa saja",
-        "kapan ada seminar",
-        "acara mendatang"
+        "workshop perpustakaan kapan",
+        "pelatihan literasi perpustakaan",
+        "events perpustakaan",
+        "kegiatan apa saja di perpustakaan",
+        "kapan ada seminar perpustakaan",
+        "acara mendatang perpustakaan",
+        "program kegiatan perpustakaan",
+        "jadwal seminar perpustakaan",
+        "ada webinar perpustakaan tidak",
+        "jadwal workshop perpustakaan",
+        "informasi kegiatan perpustakaan",
+        "agenda perpustakaan bulan ini",
+        "jadwal event perpustakaan",
+        "kapan ada pelatihan di perpustakaan",
+        "kegiatan literasi perpustakaan",
+        "ada acara perpustakaan tidak",
+        "schedule kegiatan perpustakaan"
       ],
-      "entities": ["jenis_acara", "tanggal", "pemateri"],
+      "entities": [
+        "jenis_acara",
+        "tanggal",
+        "pemateri"
+      ],
       "response_key": "acara"
     },
     {
       "intent": "study_buddy",
       "patterns": [
         "booking study buddy",
-        "cara booking ruang",
-        "reservasi ruang diskusi",
-        "pesan study room",
-        "kapasitas study buddy",
-        "fasilitas study buddy",
-        "jam booking ruang",
-        "cara pesan ruang"
+        "cara booking ruang diskusi",
+        "reservasi ruang study buddy",
+        "pesan study room perpustakaan",
+        "kapasitas ruang study buddy",
+        "fasilitas ruang study buddy",
+        "jam booking ruang study buddy",
+        "cara memesan ruang belajar",
+        "prosedur booking ruang perpustakaan",
+        "cara reservasi study buddy online",
+        "syarat booking study buddy",
+        "cara pinjam ruang diskusi perpustakaan",
+        "booking ruangan perpustakaan",
+        "cara pesan ruang belajar bersama",
+        "reservasi ruangan untuk diskusi",
+        "cara sewa ruang diskusi perpustakaan",
+        "peminjaman ruang study buddy",
+        "cara reservasi ruang kelompok",
+        "ruang belajar bersama perpustakaan",
+        "cara booking ruang kelompok perpustakaan"
       ],
-      "entities": ["tanggal", "jam", "jumlah_orang"],
+      "entities": [
+        "tanggal",
+        "jam",
+        "jumlah_orang"
+      ],
       "response_key": "study_buddy"
     },
     {
       "intent": "akreditasi",
       "patterns": [
-        "status akreditasi",
-        "perpustakaan terakreditasi",
-        "sertifikat akreditasi",
-        "standar perpustakaan",
-        "akreditasi nasional",
-        "kualitas perpustakaan"
+        "status akreditasi perpustakaan",
+        "perpustakaan sudah terakreditasi",
+        "sertifikat akreditasi perpustakaan",
+        "standar perpustakaan BPK",
+        "akreditasi nasional perpustakaan",
+        "kualitas perpustakaan BPK RI",
+        "perpustakaan BPK RI terakreditasi",
+        "akreditasi perpustakaan BPK RI apa",
+        "sertifikasi perpustakaan BPK",
+        "perpustakaan sudah berstandar nasional",
+        "nilai akreditasi perpustakaan",
+        "perpustakaan terakreditasi berapa bintang",
+        "lembaga akreditasi perpustakaan",
+        "standarisasi perpustakaan BPK RI",
+        "pengakuan perpustakaan secara nasional",
+        "perpustakaan sudah tersertifikasi",
+        "predikat akreditasi perpustakaan",
+        "akreditasi perpustakaan dari lembaga mana",
+        "apakah perpustakaan sudah terakreditasi",
+        "bukti akreditasi perpustakaan BPK"
       ],
-      "entities": ["jenis_akreditasi", "tahun"],
+      "entities": [
+        "jenis_akreditasi",
+        "tahun"
+      ],
       "response_key": "akreditasi"
     },
     {
       "intent": "kontak",
       "patterns": [
         "nomor telepon perpustakaan",
-        "email perpustakaan",
-        "kontak perpustakaan",
-        "hubungi perpustakaan",
-        "contact person",
-        "whatsapp perpustakaan"
+        "email perpustakaan BPK RI",
+        "cara menghubungi perpustakaan",
+        "kontak perpustakaan BPK",
+        "siapa contact person perpustakaan",
+        "whatsapp perpustakaan ada tidak",
+        "nomor yang bisa dihubungi perpustakaan",
+        "cara menghubungi petugas perpustakaan",
+        "email resmi perpustakaan",
+        "alamat email perpustakaan",
+        "telepon perpustakaan BPK RI",
+        "nomor hp perpustakaan",
+        "media sosial perpustakaan BPK",
+        "instagram perpustakaan BPK RI",
+        "narahubung perpustakaan",
+        "petugas yang bisa dihubungi",
+        "contact perpustakaan BPK RI",
+        "nomor pengaduan perpustakaan",
+        "layanan informasi perpustakaan bisa dihubungi ke mana",
+        "cara bertanya ke perpustakaan"
       ],
       "entities": [],
       "response_key": "kontak"
@@ -159,26 +336,59 @@
     {
       "intent": "keanggotaan",
       "patterns": [
-        "cara daftar anggota",
-        "syarat menjadi anggota",
-        "pendaftaran member",
-        "biaya keanggotaan",
-        "kartu anggota hilang",
-        "perpanjang keanggotaan"
+        "cara daftar anggota perpustakaan",
+        "syarat menjadi anggota perpustakaan",
+        "pendaftaran member perpustakaan",
+        "biaya keanggotaan perpustakaan",
+        "kartu anggota hilang bagaimana",
+        "cara perpanjang keanggotaan",
+        "prosedur mendaftar anggota",
+        "syarat pendaftaran anggota perpustakaan",
+        "cara membuat kartu anggota",
+        "cara registrasi anggota perpustakaan",
+        "siapa saja yang bisa jadi anggota",
+        "persyaratan keanggotaan perpustakaan",
+        "daftar kartu perpustakaan",
+        "cara bikin kartu anggota perpustakaan",
+        "masa berlaku kartu anggota",
+        "kartu anggota perpustakaan BPK",
+        "perpanjang masa berlaku kartu anggota",
+        "cara mendapatkan kartu perpustakaan",
+        "formulir pendaftaran anggota perpustakaan",
+        "prosedur pembuatan kartu anggota"
       ],
-      "entities": ["jenis_anggota"],
+      "entities": [
+        "jenis_anggota"
+      ],
       "response_key": "keanggotaan"
     },
     {
       "intent": "denda",
       "patterns": [
-        "berapa denda telat",
-        "denda keterlambatan",
-        "biaya denda perpustakaan",
-        "sanksi telat mengembalikan",
-        "cara bayar denda"
+        "berapa denda telat mengembalikan buku",
+        "denda keterlambatan pengembalian",
+        "biaya denda perpustakaan per hari",
+        "sanksi telat mengembalikan buku",
+        "cara bayar denda perpustakaan",
+        "denda buku terlambat berapa rupiah",
+        "kena denda berapa kalau telat",
+        "biaya keterlambatan pengembalian buku",
+        "denda buku per hari berapa",
+        "apakah ada denda jika buku terlambat",
+        "konsekuensi terlambat mengembalikan buku",
+        "berapa biaya keterlambatan buku",
+        "cara melunasi denda perpustakaan",
+        "denda perpustakaan dibayar ke mana",
+        "jika buku terlambat dikembalikan kena denda berapa",
+        "biaya penalti keterlambatan buku",
+        "denda telat balikin buku berapa",
+        "cara bayar tagihan denda buku",
+        "sanksi keterlambatan pengembalian koleksi",
+        "berapa rupiah denda per hari perpustakaan"
       ],
-      "entities": ["jumlah_hari"],
+      "entities": [
+        "jumlah_hari"
+      ],
       "response_key": "denda"
     },
     {
@@ -192,7 +402,18 @@
         "selamat siang",
         "selamat sore",
         "selamat malam",
-        "assalamualaikum"
+        "assalamualaikum",
+        "halo PUSPA",
+        "hai perpustakaan",
+        "halo ada yang bisa dibantu",
+        "permisi",
+        "selamat datang",
+        "halo selamat pagi",
+        "hai selamat siang",
+        "hei perpustakaan",
+        "good morning",
+        "good afternoon",
+        "apa kabar perpustakaan"
       ],
       "entities": [],
       "response_key": "salam"
@@ -204,7 +425,22 @@
         "makasih",
         "thanks",
         "thank you",
-        "terimakasih banyak"
+        "terimakasih banyak",
+        "makasih ya",
+        "makasih atas bantuannya",
+        "terima kasih sudah membantu",
+        "thanks atas informasinya",
+        "terima kasih banyak",
+        "terima kasih informasinya",
+        "mksh",
+        "thx",
+        "tengkyu",
+        "thank you so much",
+        "makasih infonya",
+        "terima kasih atas responnya",
+        "thanks banyak ya",
+        "oke terima kasih",
+        "baik terima kasih"
       ],
       "entities": [],
       "response_key": "terima_kasih"
@@ -213,13 +449,49 @@
       "intent": "lainnya",
       "patterns": [
         "saran untuk perpustakaan",
-        "kritik dan saran",
-        "feedback",
-        "keluhan",
-        "komplain"
+        "kritik dan saran perpustakaan",
+        "feedback layanan perpustakaan",
+        "keluhan terhadap perpustakaan",
+        "komplain layanan perpustakaan",
+        "masukan untuk perpustakaan",
+        "ingin menyampaikan keluhan",
+        "ada yang ingin saya sampaikan",
+        "perpustakaan perlu meningkatkan layanan",
+        "keluhan mengenai fasilitas perpustakaan",
+        "ada pengaduan untuk perpustakaan",
+        "tidak puas dengan layanan perpustakaan",
+        "layanan perpustakaan mengecewakan",
+        "ada masalah dengan layanan",
+        "mau kasih masukan untuk perpustakaan",
+        "ingin melaporkan masalah perpustakaan",
+        "ada keluhan soal pelayanan",
+        "perpustakaan harus diperbaiki",
+        "pengaduan terhadap layanan perpustakaan",
+        "mau lapor masalah perpustakaan"
       ],
-      "entities": ["jenis_feedback", "isi_pesan"],
+      "entities": [
+        "jenis_feedback",
+        "isi_pesan"
+      ],
       "response_key": "lainnya"
+    },
+    {
+      "intent": "fotokopi_scan",
+      "patterns": [
+        "apakah di sini bisa fotokopi?",
+        "bisa scan dokumen di sini?"
+      ],
+      "entities": [],
+      "response_key": "fotokopi_scan"
+    },
+    {
+      "intent": "fotokopi",
+      "patterns": [
+        "apakah di sini bisa fotokopi",
+        "apakah di sini bisa scan"
+      ],
+      "entities": [],
+      "response_key": "fotokopi_scan"
     }
   ]
 }

@@ -1,13 +1,16 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 import time
 import uuid
 import json
+import os
 from functools import wraps
 from nlu_engine import NLUEngine
 from rule_engine import RuleEngine
 from database import Database
 from auth import AuthSystem
+import csv
+import io
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS untuk frontend
@@ -17,6 +20,35 @@ nlu = NLUEngine()
 rule_engine = RuleEngine()
 db = Database()
 auth = AuthSystem()
+
+# Path ke folder frontend dan dashboard
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+FRONTEND_DIR = os.path.join(BASE_DIR, '..', 'frontend')
+DASHBOARD_DIR = os.path.join(BASE_DIR, '..', 'dashboard')
+
+# =====================================================
+# STATIC FILE SERVING
+# =====================================================
+
+@app.route('/')
+def index():
+    return send_from_directory(DASHBOARD_DIR, 'admin-dashboard.html')
+
+@app.route('/dashboard')
+def dashboard():
+    return send_from_directory(DASHBOARD_DIR, 'admin-dashboard.html')
+
+@app.route('/chatbot')
+def chatbot():
+    return send_from_directory(FRONTEND_DIR, 'index.html')
+
+@app.route('/dashboard/<path:filename>')
+def dashboard_static(filename):
+    return send_from_directory(DASHBOARD_DIR, filename)
+
+@app.route('/frontend/<path:filename>')
+def frontend_static(filename):
+    return send_from_directory(FRONTEND_DIR, filename)
 
 # =====================================================
 # DECORATOR UNTUK PROTECTED ROUTES
@@ -196,47 +228,97 @@ def get_analytics_summary():
     except Exception as e:
         print(f"Error in analytics summary: {str(e)}")
         return jsonify({'error': 'Internal server error'}), 500
+    
 
-@app.route('/api/admin/logs', methods=['GET'])
+@app.route('/api/admin/analytics/hourly', methods=['GET'])
 @require_auth
-def get_logs():
-    """Get conversation logs dengan pagination"""
+def get_hourly_activity():
     try:
-        limit = int(request.args.get('limit', 50))
-        offset = int(request.args.get('offset', 0))
-        
-        logs = db.get_conversation_logs(limit=limit, offset=offset)
-        
-        return jsonify({
-            'logs': logs,
-            'limit': limit,
-            'offset': offset
-        })
+        data = db.get_hourly_activity()
+        return jsonify({'hourly': data})
     except Exception as e:
-        print(f"Error in get logs: {str(e)}")
-        return jsonify({'error': 'Internal server error'}), 500
-
-@app.route('/api/admin/logs/search', methods=['GET'])
+        return jsonify({'error': str(e)}), 500
+ 
+ 
+@app.route('/api/admin/analytics/confidence', methods=['GET'])
 @require_auth
-def search_logs():
-    """Search dalam logs"""
+def get_intent_confidence_stats():
     try:
-        query = request.args.get('q', '')
-        intent_filter = request.args.get('intent', None)
-        
-        if not query:
-            return jsonify({'error': 'Search query required'}), 400
-        
-        results = db.search_logs(query, intent_filter)
-        
-        return jsonify({
-            'results': results,
-            'query': query,
-            'intent_filter': intent_filter
-        })
+        data = db.get_intent_confidence_stats()
+        return jsonify({'confidence_stats': data})
     except Exception as e:
-        print(f"Error in search logs: {str(e)}")
-        return jsonify({'error': 'Internal server error'}), 500
+        return jsonify({'error': str(e)}), 500
+ 
+ 
+@app.route('/api/admin/logs/sessions', methods=['GET'])
+@require_auth
+def get_sessions_list():
+    """Daftar session (1 baris per session) untuk tabel Conversation Logs"""
+    try:
+        sessions = db.get_sessions_list()
+        return jsonify({'sessions': sessions})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+ 
+ 
+@app.route('/api/admin/logs/session/<session_id>', methods=['GET'])
+@require_auth
+def get_session_detail(session_id):
+    try:
+        detail = db.get_session_detail(session_id)
+        if not detail:
+            return jsonify({'error': 'Session tidak ditemukan'}), 404
+        return jsonify(detail)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+ 
+ 
+@app.route('/api/admin/logs/backup', methods=['GET'])
+@require_auth
+def backup_logs():
+    """Download semua log sebagai CSV"""
+    try:
+        import csv, io
+        logs = db.get_all_logs_for_backup()
+ 
+        output = io.StringIO()
+        writer = csv.DictWriter(output, fieldnames=[
+            'id', 'session_id', 'user_message', 'bot_response',
+            'intent', 'confidence', 'response_time', 'timestamp'
+        ])
+        writer.writeheader()
+        writer.writerows(logs)
+ 
+        from flask import Response
+        return Response(
+            output.getvalue(),
+            mimetype='text/csv; charset=utf-8',
+            headers={'Content-Disposition': 'attachment; filename=chatbot_logs_backup.csv'}
+        )
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+ 
+ 
+@app.route('/api/admin/logs/all', methods=['DELETE'])
+@require_auth
+def delete_all_logs():
+    try:
+        deleted = db.delete_all_logs()
+        return jsonify({'success': True, 'deleted': deleted, 'message': f'{deleted} pesan berhasil dihapus'})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+ 
+ 
+@app.route('/api/admin/logs/session/<session_id>', methods=['DELETE'])
+@require_auth
+def delete_session_logs(session_id):
+    try:
+        deleted = db.delete_session_logs(session_id)
+        if deleted == 0:
+            return jsonify({'error': 'Session tidak ditemukan'}), 404
+        return jsonify({'success': True, 'deleted': deleted})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 # =====================================================
 # INTENT MANAGEMENT ENDPOINTS (PROTECTED)
@@ -570,9 +652,9 @@ def health_check():
         'version': '1.0.0'
     })
 
-@app.route('/', methods=['GET'])
-def index():
-    """Root endpoint"""
+@app.route('/api', methods=['GET'])
+def api_info():
+    """API info endpoint"""
     return jsonify({
         'message': 'Chatbot Perpustakaan BPK RI API',
         'version': '1.0.0',
@@ -606,24 +688,12 @@ if __name__ == '__main__':
     print("=" * 60)
     print()
     print("📊 Dashboard: http://localhost:5000")
-    print("💬 Chat API: http://localhost:5000/api/chat")
-    print("🔐 Admin Login: http://localhost:5000/dashboard")
+    print("💬 Chat API:  http://localhost:5000/api/chat")
+    print("🔐 Chatbot:   http://localhost:5000/chatbot")
     print()
     print("🔑 Default Credentials:")
     print("   Username: admin")
     print("   Password: admin123")
-    print()
-    print("📖 API Documentation:")
-    print("   GET  /api/health - Health check")
-    print("   POST /api/chat - Send message to chatbot")
-    print("   POST /api/auth/login - Admin login")
-    print("   GET  /api/admin/analytics/summary - Get analytics")
-    print("   GET  /api/admin/intents - Get all intents")
-    print("   POST /api/admin/intents - Add new intent")
-    print("   PUT  /api/admin/intents/<name> - Update intent")
-    print("   DELETE /api/admin/intents/<name> - Delete intent")
-    print("   GET  /api/admin/responses/<key> - Get response detail")
-    print("   PUT  /api/admin/responses/<key> - Update response")
     print()
     print("=" * 60)
     print("✅ Server is running on http://localhost:5000")
