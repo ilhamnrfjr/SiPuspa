@@ -7,378 +7,263 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
-        .stat-card { background: white; border-radius: 1rem; padding: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); transition: all 0.3s; }
-        .stat-card:hover { box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
-        .tab-active { border-bottom: 2px solid #667eea; color: #667eea; }
-        .tab-inactive { border-bottom: 2px solid transparent; color: #6b7280; }
-        .loading-spinner { border: 4px solid #f3f4f6; border-top: 4px solid #667eea; border-radius: 50%; width: 60px; height: 60px; animation: spin 1s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .modal { display: none; position: fixed; z-index: 50; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); }
-        .modal.active { display: flex; align-items: center; justify-content: center; }
+        .stat-card{background:white;border-radius:1rem;padding:1.5rem;box-shadow:0 4px 6px -1px rgba(0,0,0,0.1);transition:all 0.3s}
+        .stat-card:hover{box-shadow:0 20px 25px -5px rgba(0,0,0,0.1)}
+        .tab-active{border-bottom:2px solid #667eea;color:#667eea}
+        .tab-inactive{border-bottom:2px solid transparent;color:#6b7280}
+        .loading-spinner{border:4px solid #f3f4f6;border-top:4px solid #667eea;border-radius:50%;width:60px;height:60px;animation:spin 1s linear infinite}
+        @keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+        .modal{display:none;position:fixed;z-index:50;left:0;top:0;width:100%;height:100%;background-color:rgba(0,0,0,0.5)}
+        .modal.active{display:flex;align-items:center;justify-content:center}
+        .badge-tersedia{background:#dcfce7;color:#166534}
+        .badge-dipinjam{background:#fef9c3;color:#854d0e}
+        .badge-tidak{background:#fee2e2;color:#991b1b}
+        .badge-available{background:#dcfce7;color:#166534}
+        .badge-booked{background:#fef9c3;color:#854d0e}
+        .badge-closed{background:#f3f4f6;color:#6b7280}
     </style>
 </head>
 <body class="bg-gradient-to-br from-purple-50 to-blue-50 min-h-screen">
-    
-    <!-- Login Page -->
-    <div id="loginPage" class="flex items-center justify-center min-h-screen">
-        <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md">
-            <div class="text-center mb-8">
-                <div class="text-6xl mb-4">🔐</div>
-                <h2 class="text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-2">
-                    Admin Dashboard
-                </h2>
-                <p class="text-gray-600">Perpustakaan BPK RI</p>
+
+<!-- ═══════════════════ LOGIN PAGE ═══════════════════ -->
+<div id="loginPage" class="flex items-center justify-center min-h-screen">
+    <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md">
+        <div class="text-center mb-8">
+            <div class="text-6xl mb-4">🔐</div>
+            <h2 class="text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-2">Admin Dashboard</h2>
+            <p class="text-gray-600">Perpustakaan BPK RI</p>
+        </div>
+        <form onsubmit="handleLogin(event)" class="space-y-6">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Username</label>
+                <input type="text" id="loginUsername" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent" placeholder="Masukkan username">
             </div>
-            
-            <form onsubmit="handleLogin(event)" class="space-y-6">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                <input type="password" id="loginPassword" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent" placeholder="Masukkan password">
+            </div>
+            <div id="loginError" class="hidden bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm"></div>
+            <button type="submit" id="loginBtn" class="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-3 rounded-lg font-semibold hover:shadow-lg transition-all duration-300">Login</button>
+        </form>
+    </div>
+</div>
+
+<!-- ═══════════════════ MAIN DASHBOARD ═══════════════════ -->
+<div id="mainDashboard" style="display:none">
+
+    <!-- Header -->
+    <div class="bg-white shadow-lg border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-6 py-5">
+            <div class="flex items-center justify-between">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Username</label>
-                    <input type="text" id="loginUsername" required
-                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent"
-                           placeholder="Masukkan username">
+                    <h1 class="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">Dashboard Admin Chatbot</h1>
+                    <p class="text-gray-500 text-sm mt-1">Perpustakaan BPK RI • <span id="adminName">Admin</span></p>
                 </div>
-                
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
-                    <input type="password" id="loginPassword" required
-                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent"
-                           placeholder="Masukkan password">
+                <div class="flex gap-3">
+                    <button onclick="refreshData()" class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:shadow-lg transition-all text-sm">
+                        🔄 Refresh
+                    </button>
+                    <button onclick="handleLogout()" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all text-sm">Logout</button>
                 </div>
-                
-                <div id="loginError" class="hidden bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm"></div>
-                
-                <button type="submit" id="loginBtn"
-                        class="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-3 rounded-lg font-semibold hover:shadow-lg transition-all duration-300">
-                    Login
-                </button>
-            </form>
+            </div>
         </div>
     </div>
 
-    <!-- Main Dashboard -->
-    <div id="mainDashboard" style="display: none;">
-        <!-- Header -->
-        <div class="bg-white shadow-lg border-b border-gray-200">
-            <div class="max-w-7xl mx-auto px-6 py-6">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <h1 class="text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-                            Dashboard Admin Chatbot
-                        </h1>
-                        <p class="text-gray-600 mt-2">Perpustakaan BPK RI • <span id="adminName">Admin</span></p>
-                    </div>
-                    <div class="flex gap-3">
-                        <button onclick="refreshData()" class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:shadow-lg transition-all">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polyline points="23 4 23 10 17 10"></polyline>
-                                <polyline points="1 20 1 14 7 14"></polyline>
-                                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
-                            </svg>
-                            Refresh
-                        </button>
-                        <button onclick="handleLogout()" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all">
-                            Logout
-                        </button>
-                    </div>
-                </div>
+    <div class="max-w-7xl mx-auto px-6 py-8">
+
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <div class="stat-card">
+                <div class="p-2 rounded-lg bg-purple-100 w-fit mb-3">💬</div>
+                <p class="text-gray-500 text-xs mb-1">Total Percakapan</p>
+                <p id="totalConversations" class="text-2xl font-bold text-gray-800">0</p>
+                <p class="text-xs text-gray-400">Unique sessions</p>
+            </div>
+            <div class="stat-card">
+                <div class="p-2 rounded-lg bg-blue-100 w-fit mb-3">📨</div>
+                <p class="text-gray-500 text-xs mb-1">Total Pesan</p>
+                <p id="totalMessages" class="text-2xl font-bold text-gray-800">0</p>
+                <p class="text-xs text-gray-400">Semua pesan</p>
+            </div>
+            <div class="stat-card">
+                <div class="p-2 rounded-lg bg-green-100 w-fit mb-3">⏱️</div>
+                <p class="text-gray-500 text-xs mb-1">Avg Response Time</p>
+                <p id="avgResponseTime" class="text-2xl font-bold text-gray-800">0s</p>
+                <p class="text-xs text-gray-400">Waktu rata-rata</p>
+            </div>
+            <div class="stat-card">
+                <div class="p-2 rounded-lg bg-pink-100 w-fit mb-3">🎯</div>
+                <p class="text-gray-500 text-xs mb-1">Avg Confidence</p>
+                <p id="avgConfidence" class="text-2xl font-bold text-gray-800">0%</p>
+                <p class="text-xs text-gray-400">Akurasi deteksi</p>
             </div>
         </div>
 
-        <!-- Content -->
-        <div class="max-w-7xl mx-auto px-6 py-8">
-            <!-- Stats Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                <div class="stat-card">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="p-3 rounded-lg bg-purple-100">
-                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#667eea" stroke-width="2">
-                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                            </svg>
-                        </div>
-                    </div>
-                    <h3 class="text-gray-600 text-sm font-medium mb-1">Total Percakapan</h3>
-                    <p id="totalConversations" class="text-3xl font-bold text-gray-800 mb-1">0</p>
-                    <p class="text-xs text-gray-500">Unique sessions</p>
-                </div>
-
-                <div class="stat-card">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="p-3 rounded-lg bg-blue-100">
-                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2">
-                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                                <circle cx="9" cy="7" r="4"></circle>
-                            </svg>
-                        </div>
-                    </div>
-                    <h3 class="text-gray-600 text-sm font-medium mb-1">Total Pesan</h3>
-                    <p id="totalMessages" class="text-3xl font-bold text-gray-800 mb-1">0</p>
-                    <p class="text-xs text-gray-500">Semua pesan</p>
-                </div>
-
-                <div class="stat-card">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="p-3 rounded-lg bg-green-100">
-                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2">
-                                <circle cx="12" cy="12" r="10"></circle>
-                                <polyline points="12 6 12 12 16 14"></polyline>
-                            </svg>
-                        </div>
-                    </div>
-                    <h3 class="text-gray-600 text-sm font-medium mb-1">Avg Response Time</h3>
-                    <p id="avgResponseTime" class="text-3xl font-bold text-gray-800 mb-1">0s</p>
-                    <p class="text-xs text-gray-500">Waktu rata-rata</p>
-                </div>
-
-                <div class="stat-card">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="p-3 rounded-lg bg-pink-100">
-                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ec4899" stroke-width="2">
-                                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
-                                <polyline points="17 6 23 6 23 12"></polyline>
-                            </svg>
-                        </div>
-                    </div>
-                    <h3 class="text-gray-600 text-sm font-medium mb-1">Avg Confidence</h3>
-                    <p id="avgConfidence" class="text-3xl font-bold text-gray-800 mb-1">0%</p>
-                    <p class="text-xs text-gray-500">Akurasi deteksi</p>
+        <!-- Tab Container -->
+        <div class="bg-white rounded-xl shadow-lg mb-6">
+            <!-- Tab Nav -->
+            <div class="border-b border-gray-200 overflow-x-auto">
+                <div class="flex min-w-max px-4">
+                    <button onclick="switchTab('overview')"  id="tabOverview" class="py-4 px-3 border-b-2 font-medium text-sm transition-colors whitespace-nowrap tab-active">📊 Overview</button>
+                    <button onclick="switchTab('logs')"      id="tabLogs"     class="py-4 px-3 border-b-2 font-medium text-sm transition-colors whitespace-nowrap tab-inactive">💬 Conversation Logs</button>
+                    <button onclick="switchTab('manage')"    id="tabManage"   class="py-4 px-3 border-b-2 font-medium text-sm transition-colors whitespace-nowrap tab-inactive">🛠️ Manage Intents</button>
                 </div>
             </div>
 
-            <!-- Tabs — Intent Analysis dihapus -->
-            <div class="bg-white rounded-xl shadow-lg mb-6">
-                <div class="border-b border-gray-200">
-                    <div class="flex space-x-8 px-6">
-                        <button onclick="switchTab('overview')" id="tabOverview" class="py-4 px-2 border-b-2 font-medium text-sm transition-colors tab-active">Overview</button>
-                        <button onclick="switchTab('logs')" id="tabLogs" class="py-4 px-2 border-b-2 font-medium text-sm transition-colors tab-inactive">Conversation Logs</button>
-                        <button onclick="switchTab('manage')" id="tabManage" class="py-4 px-2 border-b-2 font-medium text-sm transition-colors tab-inactive">🛠️ Manage Intents</button>
-                    </div>
-                </div>
+            <div class="p-6">
 
-                <div class="p-6">
-                    <!-- Overview Tab -->
-                    <div id="overviewTab">
-                        <div class="space-y-6">
-
-                            <!-- Row 1: Line chart pesan per hari -->
-                            <div class="bg-gradient-to-br from-purple-50 to-blue-50 rounded-xl p-6">
-                                <h3 class="text-lg font-semibold text-gray-800 mb-1">📊 Pesan Per Hari (7 Hari Terakhir)</h3>
-                                <p class="text-xs text-gray-500 mb-4">Tren volume percakapan harian</p>
-                                <canvas id="messagesChart" height="80"></canvas>
-                            </div>
-
-                            <!-- Row 2: Frekuensi intent + Aktivitas per jam -->
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div class="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-6">
-                                    <h3 class="text-lg font-semibold text-gray-800 mb-1">🎯 Frekuensi Intent</h3>
-                                    <p class="text-xs text-gray-500 mb-4">Semua intent — dinamis mengikuti data aktual</p>
-                                    <canvas id="intentsChart" height="160"></canvas>
-                                </div>
-                                <div class="bg-gradient-to-br from-green-50 to-teal-50 rounded-xl p-6">
-                                    <h3 class="text-lg font-semibold text-gray-800 mb-1">🕐 Aktivitas Per Jam</h3>
-                                    <p class="text-xs text-gray-500 mb-4">Kapan chatbot paling banyak dipakai (7 hari terakhir)</p>
-                                    <canvas id="hourlyChart" height="160"></canvas>
-                                </div>
-                            </div>
-
-                            <!-- Row 3: Confidence per intent -->
-                            <div class="bg-gradient-to-br from-orange-50 to-yellow-50 rounded-xl p-6">
-                                <h3 class="text-lg font-semibold text-gray-800 mb-1">🎯 Rata-rata Confidence per Intent</h3>
-                                <p class="text-xs text-gray-500 mb-1">Diurutkan dari confidence terendah — <span class="text-red-500 font-medium">merah</span> perlu perbaikan patterns, <span class="text-yellow-600 font-medium">kuning</span> perlu ditingkatkan, <span class="text-green-600 font-medium">hijau</span> sudah baik</p>
-                                <p class="text-xs text-gray-400 mb-4">Threshold: &lt;60% = merah, 60–80% = kuning, &gt;80% = hijau</p>
-                                <canvas id="confidenceChart" height="120"></canvas>
-                            </div>
-
-                            <!-- Row 4: Intent coverage table -->
-                            <div class="bg-white rounded-xl border border-gray-200 p-6">
-                                <div class="flex items-center justify-between mb-4">
-                                    <div>
-                                        <h3 class="text-lg font-semibold text-gray-800">📋 Intent Coverage</h3>
-                                        <p class="text-xs text-gray-500 mt-1">Intent mana yang sudah pernah dipanggil user vs yang belum</p>
-                                    </div>
-                                    <span id="coverageStats" class="text-xs text-gray-400 bg-gray-100 px-3 py-1 rounded-full"></span>
-                                </div>
-                                <div class="overflow-hidden rounded-lg border border-gray-100">
-                                    <table class="w-full">
-                                        <thead class="bg-gray-50">
-                                            <tr>
-                                                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600">INTENT</th>
-                                                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600">PATTERNS</th>
-                                                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600">TOTAL DIPANGGIL</th>
-                                                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600">STATUS</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="coverageTableBody"></tbody>
-                                    </table>
-                                </div>
-                            </div>
-
+                <!-- ══ OVERVIEW TAB ══ -->
+                <div id="overviewTab">
+                    <div class="space-y-6">
+                        <div class="bg-gradient-to-br from-purple-50 to-blue-50 rounded-xl p-6">
+                            <h3 class="text-base font-semibold text-gray-800 mb-1">📊 Pesan Per Hari (7 Hari Terakhir)</h3>
+                            <p class="text-xs text-gray-500 mb-4">Tren volume percakapan harian</p>
+                            <canvas id="messagesChart" height="80"></canvas>
                         </div>
-                    </div>
-
-                    <!-- Logs Tab -->
-                    <div id="logsTab" style="display: none;">
-                        <div class="space-y-4">
-
-                            <!-- Toolbar: search + filter + backup + delete all -->
-                            <div class="flex flex-wrap gap-3 items-center">
-                                <div class="flex-1 min-w-[200px] relative">
-                                    <svg class="absolute left-3 top-2.5 text-gray-400" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path>
-                                    </svg>
-                                    <input type="text" id="searchInput" oninput="filterLogs()" placeholder="Cari percakapan..."
-                                           class="w-full pl-9 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-600 text-sm">
-                                </div>
-                                <select id="intentFilter" onchange="filterLogs()" class="px-3 py-2 border rounded-lg text-sm">
-                                    <option value="all">Semua Intent</option>
-                                </select>
-
-                                <!-- Backup CSV langsung -->
-                                <button onclick="downloadBackup('csv')"
-                                        class="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg text-sm hover:bg-green-700 transition-colors">
-                                    📥 Backup CSV
-                                </button>
-
-                                <!-- Hapus semua -->
-                                <button onclick="deleteAllLogs()"
-                                        class="flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-lg text-sm hover:bg-red-600 transition-colors">
-                                    🗑️ Hapus Semua
-                                </button>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-6">
+                                <h3 class="text-base font-semibold text-gray-800 mb-1">🎯 Frekuensi Intent</h3>
+                                <p class="text-xs text-gray-500 mb-4">Dinamis mengikuti semua intent aktual</p>
+                                <canvas id="intentsChart" height="160"></canvas>
                             </div>
-
-                            <p class="text-xs text-gray-400">💡 Klik baris untuk melihat detail percakapan dalam 1 session</p>
-
-                            <div class="bg-white rounded-lg border overflow-hidden">
+                            <div class="bg-gradient-to-br from-green-50 to-teal-50 rounded-xl p-6">
+                                <h3 class="text-base font-semibold text-gray-800 mb-1">🕐 Aktivitas Per Jam</h3>
+                                <p class="text-xs text-gray-500 mb-4">Kapan chatbot paling banyak dipakai (7 hari terakhir)</p>
+                                <canvas id="hourlyChart" height="160"></canvas>
+                            </div>
+                        </div>
+                        <div class="bg-gradient-to-br from-orange-50 to-yellow-50 rounded-xl p-6">
+                            <h3 class="text-base font-semibold text-gray-800 mb-1">📈 Rata-rata Confidence per Intent</h3>
+                            <p class="text-xs text-gray-400 mb-4">Merah &lt;60% perlu perbaikan · Kuning 60–80% · Hijau &gt;80% sudah baik</p>
+                            <canvas id="confidenceChart" height="120"></canvas>
+                        </div>
+                        <div class="bg-white rounded-xl border border-gray-200 p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <div>
+                                    <h3 class="text-base font-semibold text-gray-800">📋 Intent Coverage</h3>
+                                    <p class="text-xs text-gray-500 mt-1">Intent terdaftar vs yang pernah dipakai user</p>
+                                </div>
+                                <span id="coverageStats" class="text-xs text-gray-400 bg-gray-100 px-3 py-1 rounded-full"></span>
+                            </div>
+                            <div class="overflow-hidden rounded-lg border border-gray-100">
                                 <table class="w-full">
-                                    <thead class="bg-gradient-to-r from-purple-600 to-blue-600 text-white">
+                                    <thead class="bg-gray-50">
                                         <tr>
-                                            <th class="px-4 py-3 text-left text-xs font-semibold">WAKTU MULAI</th>
-                                            <th class="px-4 py-3 text-left text-xs font-semibold">PESAN</th>
-                                            <th class="px-4 py-3 text-left text-xs font-semibold">INTENT YANG DIGUNAKAN</th>
-                                            <th class="px-4 py-3 text-left text-xs font-semibold">SESSION ID</th>
-                                            <th class="px-4 py-3 text-left text-xs font-semibold">AKSI</th>
+                                            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600">INTENT</th>
+                                            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600">PATTERNS</th>
+                                            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600">TOTAL DIPANGGIL</th>
+                                            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600">STATUS</th>
                                         </tr>
                                     </thead>
-                                    <tbody id="logsTableBody"></tbody>
+                                    <tbody id="coverageTableBody"></tbody>
                                 </table>
                             </div>
-                            <div id="logsCount" class="text-sm text-gray-600 text-center pt-2">0 session</div>
                         </div>
                     </div>
+                </div>
 
-                    <!-- Manage Intents Tab -->
-                    <div id="manageTab" style="display: none;">
-                        <div class="mb-6">
-                            <button onclick="showAddIntentModal()" 
-                                    class="px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:shadow-lg font-semibold">
-                                ➕ Tambah Intent Baru
-                            </button>
+                <!-- ══ LOGS TAB ══ -->
+                <div id="logsTab" style="display:none">
+                    <div class="space-y-4">
+                        <div class="flex flex-wrap gap-3 items-center">
+                            <div class="flex-1 min-w-[180px] relative">
+                                <svg class="absolute left-3 top-2.5 text-gray-400" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                                <input type="text" id="searchInput" oninput="filterLogs()" placeholder="Cari session / intent..." class="w-full pl-9 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-600 text-sm">
+                            </div>
+                            <select id="intentFilter" onchange="filterLogs()" class="px-3 py-2 border rounded-lg text-sm">
+                                <option value="all">Semua Intent</option>
+                            </select>
+                            <button onclick="downloadBackup('csv')" class="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg text-sm hover:bg-green-700 transition-colors">📥 Backup CSV</button>
+                            <button onclick="deleteAllLogs()" class="flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-lg text-sm hover:bg-red-600 transition-colors">🗑️ Hapus Semua</button>
                         </div>
-                        
-                        <div class="bg-white rounded-lg border">
+                        <p class="text-xs text-gray-400">💡 Klik baris untuk melihat detail percakapan dalam 1 session</p>
+                        <div class="bg-white rounded-lg border overflow-x-auto">
                             <table class="w-full">
-                                <thead class="bg-gray-50">
+                                <thead class="bg-gradient-to-r from-purple-600 to-blue-600 text-white">
                                     <tr>
-                                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700">INTENT NAME</th>
-                                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700">PATTERNS</th>
-                                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700">RESPONSE KEY</th>
-                                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700">ACTIONS</th>
+                                        <th class="px-4 py-3 text-left text-xs font-semibold">WAKTU MULAI</th>
+                                        <th class="px-4 py-3 text-left text-xs font-semibold">PESAN</th>
+                                        <th class="px-4 py-3 text-left text-xs font-semibold">INTENT DIGUNAKAN</th>
+                                        <th class="px-4 py-3 text-left text-xs font-semibold">SESSION ID</th>
+                                        <th class="px-4 py-3 text-left text-xs font-semibold">AKSI</th>
                                     </tr>
                                 </thead>
-                                <tbody id="manageIntentsBody"></tbody>
+                                <tbody id="logsTableBody"></tbody>
                             </table>
                         </div>
+                        <div id="logsCount" class="text-sm text-gray-500 text-center pt-2">0 session</div>
                     </div>
                 </div>
-            </div>
+
+                <!-- ══ MANAGE INTENTS TAB ══ -->
+                <div id="manageTab" style="display:none">
+                    <div class="mb-4">
+                        <button onclick="showAddIntentModal()" class="px-5 py-2.5 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:shadow-lg font-semibold text-sm">➕ Tambah Intent Baru</button>
+                    </div>
+                    <div class="bg-white rounded-lg border overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600">NAMA INTENT</th>
+                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600">PATTERNS</th>
+                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600">AKSI</th>
+                                </tr>
+                            </thead>
+                            <tbody id="manageIntentsBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+                </div>
+            </div><!-- /p-6 -->
+        </div><!-- /tab container -->
+    </div><!-- /max-w -->
+</div><!-- /mainDashboard -->
+
+<!-- ═══════════ MODAL: Intent ═══════════ -->
+<div id="intentModal" class="modal">
+    <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+        <div class="flex justify-between items-center mb-6">
+            <h3 class="text-xl font-bold text-gray-800" id="intentModalTitle">Tambah Intent</h3>
+            <button onclick="closeModal('intentModal')" class="text-gray-400 hover:text-gray-600 text-2xl">×</button>
         </div>
-    </div>
-
-    <!-- Modal Add/Edit Intent -->
-    <div id="intentModal" class="modal">
-        <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-3xl max-h-[90vh] overflow-y-auto">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-2xl font-bold text-gray-800" id="modalTitle">Tambah Intent Baru</h3>
-                <button onclick="closeIntentModal()" class="text-gray-400 hover:text-gray-600 text-2xl">×</button>
+        <form onsubmit="handleSaveIntent(event)" class="space-y-4">
+            <div><label class="block text-sm font-medium text-gray-700 mb-1">Nama Intent *</label>
+                <input type="text" id="intentName" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-600" placeholder="contoh: jam_operasional">
+                <p class="text-xs text-gray-400 mt-1">Nama unik tanpa spasi, gunakan underscore</p></div>
+            <div><label class="block text-sm font-medium text-gray-700 mb-1">Patterns / Contoh Pertanyaan *</label>
+                <textarea id="intentPatterns" rows="5" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-600" placeholder="jam buka perpustakaan&#10;perpustakaan buka jam berapa&#10;jadwal operasional"></textarea>
+                <p class="text-xs text-gray-400 mt-1">Satu pertanyaan per baris — semakin banyak variasi, semakin akurat</p></div>
+            <div><label class="block text-sm font-medium text-gray-700 mb-1">Teks Jawaban *</label>
+                <textarea id="intentResponseText" rows="7" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-600 text-sm" placeholder="Masukkan jawaban yang akan diberikan chatbot...&#10;&#10;Contoh format:&#10;**Jam Operasional Perpustakaan BPK RI**&#10;• Senin–Jumat: 08.00–16.00 WIB&#10;• Sabtu–Minggu: Tutup"></textarea>
+                <p class="text-xs text-gray-400 mt-1">Gunakan **teks** untuk bold, • untuk poin daftar</p></div>
+            <div><label class="block text-sm font-medium text-gray-700 mb-1">Tombol Quick Reply (opsional, pisahkan koma)</label>
+                <input type="text" id="intentQuickReplies" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-600" placeholder="Lokasi Perpustakaan, Cara Pinjam, Fasilitas">
+                <p class="text-xs text-gray-400 mt-1">Tombol pilihan cepat yang muncul setelah chatbot menjawab</p></div>
+            <input type="hidden" id="editingIntent" value="">
+            <div class="flex gap-3 pt-2">
+                <button type="submit" class="flex-1 bg-gradient-to-r from-purple-600 to-blue-600 text-white py-2.5 rounded-lg font-semibold hover:shadow-lg text-sm">💾 Simpan Intent</button>
+                <button type="button" onclick="closeModal('intentModal')" class="px-6 py-2.5 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 text-sm">Batal</button>
             </div>
-            
-            <form onsubmit="handleSaveIntent(event)" class="space-y-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Intent Name *</label>
-                    <input type="text" id="intentName" required
-                           class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-600"
-                           placeholder="contoh: jam_operasional">
-                </div>
-                
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Patterns (satu per baris) *</label>
-                    <textarea id="intentPatterns" rows="6" required
-                              class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-600"
-                              placeholder="jam buka perpustakaan&#10;perpustakaan buka jam berapa&#10;jadwal operasional"></textarea>
-                    <p class="text-xs text-gray-500 mt-1">Masukkan variasi pertanyaan yang mewakili intent ini</p>
-                </div>
-                
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Response Key *</label>
-                    <input type="text" id="intentResponseKey" required
-                           class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-600"
-                           placeholder="jam_operasional">
-                    <p class="text-xs text-gray-500 mt-1">Key ini harus ada di responses.json</p>
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Response Text *</label>
-                    <textarea id="intentResponseText" rows="8" required
-                              class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-600 font-mono text-sm"
-                              placeholder="Masukkan response chatbot di sini...&#10;&#10;Tips:&#10;- Gunakan **bold** untuk judul&#10;- Gunakan \n untuk baris baru&#10;- Gunakan • untuk bullet points"></textarea>
-                    <p class="text-xs text-gray-500 mt-1">Response yang akan diberikan chatbot untuk intent ini</p>
-                </div>
-                
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Entities (optional, comma separated)</label>
-                    <input type="text" id="intentEntities"
-                           class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-600"
-                           placeholder="hari, jam, lokasi">
-                    <p class="text-xs text-gray-500 mt-1">Entity yang akan diekstrak dari pertanyaan user</p>
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Quick Replies (optional, comma separated)</label>
-                    <input type="text" id="intentQuickReplies"
-                           class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-600"
-                           placeholder="Lokasi Perpustakaan, Cara Pinjam Buku, Fasilitas">
-                    <p class="text-xs text-gray-500 mt-1">Tombol quick reply yang muncul setelah response</p>
-                </div>
-                
-                <input type="hidden" id="editingIntent" value="">
-                
-                <div class="flex gap-3 pt-4">
-                    <button type="submit" class="flex-1 bg-gradient-to-r from-purple-600 to-blue-600 text-white py-3 rounded-lg font-semibold hover:shadow-lg">
-                        💾 Simpan Intent & Response
-                    </button>
-                    <button type="button" onclick="closeIntentModal()" class="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">
-                        Batal
-                    </button>
-                </div>
-            </form>
-        </div>
+        </form>
     </div>
+</div>
 
-    <!-- Modal Session Detail -->
-    <div id="sessionModal" class="modal">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden">
-            <!-- Header -->
-            <div class="flex justify-between items-center px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-purple-600 to-blue-600">
-                <div class="flex items-center gap-3">
-                    <span class="text-2xl">💬</span>
-                    <h3 class="text-lg font-bold text-white" id="sessionModalTitle">Detail Session</h3>
-                </div>
-                <button onclick="closeSessionModal()" class="text-white/70 hover:text-white text-2xl leading-none">×</button>
+
+
+<!-- ═══════════ MODAL: Session Detail ═══════════ -->
+<div id="sessionModal" class="modal">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden">
+        <div class="flex justify-between items-center px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-purple-600 to-blue-600">
+            <div class="flex items-center gap-3">
+                <span class="text-xl">💬</span>
+                <h3 class="text-base font-bold text-white" id="sessionModalTitle">Detail Session</h3>
             </div>
-            <!-- Scrollable content -->
-            <div id="sessionModalContent" class="flex-1 overflow-y-auto p-6"></div>
+            <button onclick="closeModal('sessionModal')" class="text-white/70 hover:text-white text-2xl leading-none">×</button>
         </div>
+        <div id="sessionModalContent" class="flex-1 overflow-y-auto p-6"></div>
     </div>
+</div>
 
-    <script src="/dashboard/dashboard.js"></script>
+<script src="/dashboard/dashboard.js"></script>
 </body>
 </html>

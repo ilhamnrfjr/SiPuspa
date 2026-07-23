@@ -483,15 +483,6 @@
       ],
       "entities": [],
       "response_key": "fotokopi_scan"
-    },
-    {
-      "intent": "fotokopi",
-      "patterns": [
-        "apakah di sini bisa fotokopi",
-        "apakah di sini bisa scan"
-      ],
-      "entities": [],
-      "response_key": "fotokopi_scan"
     }
   ]
 }

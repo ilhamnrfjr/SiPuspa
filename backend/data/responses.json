@@ -121,8 +121,8 @@
       ]
     },
     "fotokopi_scan": {
-      "text": "💬 **Kritik, Saran & Feedback:**\n\nTerima kasih ingin memberikan masukan untuk perpustakaan kami!\n\n📝 **Cara Menyampaikan:**\n\n1. **Form Online:**\n   library.bpk.go.id/feedback\n\n2. **Email:**\n   perpustakaan@bpk.go.id\n\n3. **Kotak Saran:**\n   Tersedia di meja layanan perpustakaan\n\n4. **WhatsApp:**\n   0812-8888-5120\n\nSemua masukan akan kami review dan ditindaklanjuti untuk peningkatan layanan.\n\nApakah ada hal lain yang bisa saya bantu?",
-      "quick_replies": []
+      "text": "📄 **Layanan Fotokopi & Scan:**\n\nPerpustakaan BPK RI menyediakan layanan fotokopi dan scan dokumen:\n\n🖨️ **Fotokopi:**\n• Tersedia di area layanan perpustakaan\n• Hanya untuk koleksi perpustakaan\n• Biaya: Rp 500 per lembar (hitam putih)\n• Warna: Rp 1.000 per lembar\n\n📸 **Scan Dokumen:**\n• Gratis untuk pengunjung perpustakaan\n• Maksimal 20 halaman per kunjungan\n• Format: PDF/JPG\n• Hasil scan dikirim via email\n\n⏰ **Jam Layanan:**\nSenin–Jumat: 08.00–15.30 WIB\n\n💡 Silakan datang ke meja layanan untuk bantuan lebih lanjut.",
+      "quick_replies": ["Jam Operasional", "Fasilitas", "Lokasi Perpustakaan"]
     }
   }
 }

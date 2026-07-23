@@ -1,478 +1,283 @@
-import sqlite3
-import json
+import mysql.connector
+from mysql.connector import Error
 from datetime import datetime
+import json
+
+DB_CONFIG = {
+    'host':      'localhost',
+    'port':      3306,
+    'user':      'root',
+    'password':  '',
+    'database':  'chatbot_bpk',
+    'charset':   'utf8mb4',
+    'collation': 'utf8mb4_unicode_ci'
+}
+
 
 class Database:
-    def __init__(self, db_name='chatbot.db'):
-        self.db_name = db_name
+    def __init__(self):
+        self.config = DB_CONFIG
         self.init_db()
-    
+
     def get_connection(self):
-        return sqlite3.connect(self.db_name)
-    
+        return mysql.connector.connect(**self.config)
+
+    def _fmt(self, val):
+        if isinstance(val, datetime): return val.strftime('%Y-%m-%d %H:%M:%S')
+        return val
+
+    def _fmt_row(self, row, keys):
+        for k in keys:
+            if k in row: row[k] = self._fmt(row[k])
+        return row
+
     def init_db(self):
-        """Inisialisasi database dan tabel"""
-        conn = self.get_connection()
-        cursor = conn.cursor()
-        
-        cursor.execute('''
+        # Buat database jika belum ada
+        cfg = {k: v for k, v in self.config.items() if k not in ('database','collation')}
+        conn = mysql.connector.connect(**cfg); cur = conn.cursor()
+        cur.execute(f"CREATE DATABASE IF NOT EXISTS `{self.config['database']}` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci")
+        conn.commit(); cur.close(); conn.close()
+
+        conn = self.get_connection(); cur = conn.cursor()
+
+        # ── conversation_logs ────────────────────────────────────────
+        cur.execute('''
             CREATE TABLE IF NOT EXISTS conversation_logs (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                session_id TEXT NOT NULL,
-                user_message TEXT NOT NULL,
-                bot_response TEXT NOT NULL,
-                intent_detected TEXT,
-                confidence REAL,
-                response_time REAL,
-                timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
-            )
+                id              INT AUTO_INCREMENT PRIMARY KEY,
+                session_id      VARCHAR(100) NOT NULL,
+                user_message    TEXT NOT NULL,
+                bot_response    TEXT NOT NULL,
+                intent_detected VARCHAR(100),
+                confidence      FLOAT,
+                response_time   FLOAT,
+                timestamp       DATETIME DEFAULT CURRENT_TIMESTAMP,
+                INDEX idx_session  (session_id),
+                INDEX idx_intent   (intent_detected),
+                INDEX idx_ts       (timestamp)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
         ''')
-        
-        cursor.execute('''
-            CREATE TABLE IF NOT EXISTS faq_management (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                question TEXT NOT NULL,
-                answer TEXT NOT NULL,
-                category TEXT,
-                is_active BOOLEAN DEFAULT 1,
-                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-            )
+
+        # ── intents — response_text langsung di sini, tidak ada tabel responses ──
+        cur.execute('''
+            CREATE TABLE IF NOT EXISTS intents (
+                id            INT AUTO_INCREMENT PRIMARY KEY,
+                intent_name   VARCHAR(100) NOT NULL UNIQUE,
+                patterns      TEXT NOT NULL  COMMENT 'JSON array',
+                response_text TEXT NOT NULL  COMMENT 'Teks jawaban chatbot',
+                quick_replies TEXT           COMMENT 'JSON array tombol quick reply',
+                created_at    DATETIME DEFAULT CURRENT_TIMESTAMP,
+                updated_at    DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
         ''')
-        
-        cursor.execute('''
-            CREATE TABLE IF NOT EXISTS user_feedback (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                session_id TEXT NOT NULL,
-                message_id INTEGER,
-                rating INTEGER CHECK(rating >= 1 AND rating <= 5),
-                feedback_text TEXT,
-                timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (message_id) REFERENCES conversation_logs(id)
-            )
-        ''')
-        
-        cursor.execute('''
-            CREATE TABLE IF NOT EXISTS analytics (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                date DATE NOT NULL,
-                total_conversations INTEGER DEFAULT 0,
-                total_messages INTEGER DEFAULT 0,
-                avg_response_time REAL DEFAULT 0,
-                success_rate REAL DEFAULT 0,
-                unique_users INTEGER DEFAULT 0
-            )
-        ''')
-        
-        conn.commit()
-        conn.close()
-    
+
+        conn.commit(); cur.close(); conn.close()
+        print("[DB] MySQL siap.")
+
+    # =================================================================
+    # CONVERSATION LOGS
+    # =================================================================
     def log_conversation(self, session_id, user_message, bot_response, intent, confidence, response_time):
-        """Simpan log percakapan"""
-        conn = self.get_connection()
-        cursor = conn.cursor()
-        
-        cursor.execute('''
-            INSERT INTO conversation_logs 
-            (session_id, user_message, bot_response, intent_detected, confidence, response_time)
-            VALUES (?, ?, ?, ?, ?, ?)
+        conn = self.get_connection(); cur = conn.cursor()
+        cur.execute('''
+            INSERT INTO conversation_logs
+                (session_id,user_message,bot_response,intent_detected,confidence,response_time)
+            VALUES (%s,%s,%s,%s,%s,%s)
         ''', (session_id, user_message, bot_response, intent, confidence, response_time))
-        
-        conn.commit()
-        message_id = cursor.lastrowid
-        conn.close()
-        
-        return message_id
-    
+        conn.commit(); mid = cur.lastrowid; cur.close(); conn.close()
+        return mid
+
     def get_conversation_logs(self, limit=100, offset=0):
-        """Ambil log percakapan untuk dashboard"""
-        conn = self.get_connection()
-        cursor = conn.cursor()
-        
-        cursor.execute('''
-            SELECT id, session_id, user_message, bot_response, intent_detected, 
-                   confidence, response_time, timestamp
-            FROM conversation_logs
-            ORDER BY timestamp DESC
-            LIMIT ? OFFSET ?
+        conn = self.get_connection(); cur = conn.cursor(dictionary=True)
+        cur.execute('''
+            SELECT id,session_id,user_message,bot_response,
+                   intent_detected AS intent,confidence,response_time,timestamp
+            FROM conversation_logs ORDER BY timestamp DESC LIMIT %s OFFSET %s
         ''', (limit, offset))
-        
-        logs = cursor.fetchall()
-        conn.close()
-        
-        return [
-            {
-                'id': log[0],
-                'session_id': log[1],
-                'user_message': log[2],
-                'bot_response': log[3],
-                'intent': log[4],
-                'confidence': log[5],
-                'response_time': log[6],
-                'timestamp': log[7]
-            }
-            for log in logs
-        ]
-    
-    def get_analytics_summary(self):
-        """Ambil summary analytics untuk dashboard"""
-        conn = self.get_connection()
-        cursor = conn.cursor()
-        
-        # Total conversations
-        cursor.execute('SELECT COUNT(DISTINCT session_id) FROM conversation_logs')
-        total_conversations = cursor.fetchone()[0]
-        
-        # Total messages
-        cursor.execute('SELECT COUNT(*) FROM conversation_logs')
-        total_messages = cursor.fetchone()[0]
-        
-        # Average response time
-        cursor.execute('SELECT AVG(response_time) FROM conversation_logs')
-        avg_response_time = cursor.fetchone()[0] or 0
-        
-        # Semua intent — tanpa LIMIT agar chart dinamis mengikuti jumlah intent aktual
-        cursor.execute('''
-            SELECT intent_detected, COUNT(*) as count
-            FROM conversation_logs
-            WHERE intent_detected IS NOT NULL
-            GROUP BY intent_detected
-            ORDER BY count DESC
-        ''')
-        top_intents = [{'intent': row[0], 'count': row[1]} for row in cursor.fetchall()]
-        
-        # Messages per day (last 7 days)
-        cursor.execute('''
-            SELECT DATE(timestamp) as date, COUNT(*) as count
-            FROM conversation_logs
-            WHERE timestamp >= datetime('now', '-7 days')
-            GROUP BY DATE(timestamp)
-            ORDER BY date
-        ''')
-        messages_per_day = [{'date': row[0], 'count': row[1]} for row in cursor.fetchall()]
-        
-        # Average confidence
-        cursor.execute('SELECT AVG(confidence) FROM conversation_logs WHERE confidence IS NOT NULL')
-        avg_confidence = cursor.fetchone()[0] or 0
-        
-        conn.close()
-        
-        return {
-            'total_conversations': total_conversations,
-            'total_messages': total_messages,
-            'avg_response_time': round(avg_response_time, 3),
-            'avg_confidence': round(avg_confidence, 2),
-            'top_intents': top_intents,
-            'messages_per_day': messages_per_day
-        }
-
-    def get_hourly_activity(self):
-        """
-        Aktivitas per jam dalam seminggu terakhir.
-        Return: list of {hour: 0-23, count: N}
-        """
-        conn = self.get_connection()
-        cursor = conn.cursor()
-
-        cursor.execute('''
-            SELECT CAST(strftime('%H', timestamp) AS INTEGER) as hour,
-                   COUNT(*) as count
-            FROM conversation_logs
-            WHERE timestamp >= datetime('now', '-7 days')
-            GROUP BY hour
-            ORDER BY hour
-        ''')
-        rows = cursor.fetchall()
-        conn.close()
-
-        # Pastikan semua 24 jam terisi (jam kosong = 0)
-        hour_map = {row[0]: row[1] for row in rows}
-        return [{'hour': h, 'count': hour_map.get(h, 0)} for h in range(24)]
-
-    def get_intent_confidence_stats(self):
-        """
-        Rata-rata confidence dan jumlah kemunculan per intent.
-        Berguna untuk mendeteksi intent yang perlu diperbaiki patternnya.
-        Return: list of {intent, avg_confidence, count}
-        """
-        conn = self.get_connection()
-        cursor = conn.cursor()
-
-        cursor.execute('''
-            SELECT intent_detected,
-                   ROUND(AVG(confidence), 3) as avg_confidence,
-                   COUNT(*) as count
-            FROM conversation_logs
-            WHERE intent_detected IS NOT NULL
-              AND confidence IS NOT NULL
-            GROUP BY intent_detected
-            ORDER BY avg_confidence ASC
-        ''')
-        rows = cursor.fetchall()
-        conn.close()
-
-        return [
-            {
-                'intent': row[0],
-                'avg_confidence': row[1],
-                'count': row[2]
-            }
-            for row in rows
-        ]
-
-    def get_session_detail(self, session_id):
-        """
-        Ambil semua pesan dalam 1 session, diurutkan chronologis.
-        Return: {session_id, messages: [...], summary: {total, first_time, last_time, intents}}
-        """
-        conn = self.get_connection()
-        cursor = conn.cursor()
-
-        cursor.execute('''
-            SELECT id, user_message, bot_response, intent_detected,
-                   confidence, response_time, timestamp
-            FROM conversation_logs
-            WHERE session_id = ?
-            ORDER BY timestamp ASC
-        ''', (session_id,))
-        rows = cursor.fetchall()
-        conn.close()
-
-        if not rows:
-            return None
-
-        messages = [
-            {
-                'id':            row[0],
-                'user_message':  row[1],
-                'bot_response':  row[2],
-                'intent':        row[3],
-                'confidence':    row[4],
-                'response_time': row[5],
-                'timestamp':     row[6]
-            }
-            for row in rows
-        ]
-
-        intents_used = list(dict.fromkeys(
-            m['intent'] for m in messages if m['intent']
-        ))
-
-        return {
-            'session_id': session_id,
-            'messages':   messages,
-            'summary': {
-                'total_messages': len(messages),
-                'first_time':     messages[0]['timestamp'],
-                'last_time':      messages[-1]['timestamp'],
-                'intents_used':   intents_used
-            }
-        }
+        rows = cur.fetchall(); cur.close(); conn.close()
+        return [self._fmt_row(r, ['timestamp']) for r in rows]
 
     def get_sessions_list(self):
-        """
-        Ambil daftar session diurutkan terbaru, 1 baris per session.
-        Return: list of {session_id, first_time, last_time, total_messages, intents_used}
-        """
-        conn = self.get_connection()
-        cursor = conn.cursor()
-
-        cursor.execute('''
-            SELECT
-                session_id,
-                MIN(timestamp)  AS first_time,
-                MAX(timestamp)  AS last_time,
-                COUNT(*)        AS total_messages,
-                GROUP_CONCAT(DISTINCT intent_detected) AS intents_raw
-            FROM conversation_logs
-            GROUP BY session_id
-            ORDER BY last_time DESC
+        conn = self.get_connection(); cur = conn.cursor(dictionary=True)
+        cur.execute('''
+            SELECT session_id,
+                   MIN(timestamp) AS first_time, MAX(timestamp) AS last_time,
+                   COUNT(*) AS total_messages,
+                   GROUP_CONCAT(DISTINCT intent_detected ORDER BY intent_detected SEPARATOR ',') AS intents_raw
+            FROM conversation_logs GROUP BY session_id ORDER BY last_time DESC
         ''')
-        rows = cursor.fetchall()
-        conn.close()
-
+        rows = cur.fetchall(); cur.close(); conn.close()
         result = []
-        for row in rows:
-            intents_raw = row[4] or ''
-            intents = [i.strip() for i in intents_raw.split(',') if i.strip()]
+        for r in rows:
+            intents = [i.strip() for i in (r['intents_raw'] or '').split(',') if i.strip()]
             result.append({
-                'session_id':     row[0],
-                'first_time':     row[1],
-                'last_time':      row[2],
-                'total_messages': row[3],
+                'session_id':     r['session_id'],
+                'first_time':     self._fmt(r['first_time']),
+                'last_time':      self._fmt(r['last_time']),
+                'total_messages': r['total_messages'],
                 'intents_used':   intents
             })
         return result
 
-    def get_all_logs_for_backup(self):
-        """Ambil semua log tanpa limit untuk keperluan backup."""
-        conn = self.get_connection()
-        cursor = conn.cursor()
-
-        cursor.execute('''
-            SELECT id, session_id, user_message, bot_response, intent_detected,
-                   confidence, response_time, timestamp
-            FROM conversation_logs
-            ORDER BY timestamp DESC
-        ''')
-        rows = cursor.fetchall()
-        conn.close()
-
-        return [
-            {
-                'id':            row[0],
-                'session_id':    row[1],
-                'user_message':  row[2],
-                'bot_response':  row[3],
-                'intent':        row[4],
-                'confidence':    row[5],
-                'response_time': row[6],
-                'timestamp':     row[7]
+    def get_session_detail(self, session_id):
+        conn = self.get_connection(); cur = conn.cursor(dictionary=True)
+        cur.execute('''
+            SELECT id,user_message,bot_response,intent_detected AS intent,
+                   confidence,response_time,timestamp
+            FROM conversation_logs WHERE session_id=%s ORDER BY timestamp ASC
+        ''', (session_id,))
+        rows = cur.fetchall(); cur.close(); conn.close()
+        if not rows: return None
+        msgs = [self._fmt_row(r, ['timestamp']) for r in rows]
+        intents_used = list(dict.fromkeys(m['intent'] for m in msgs if m['intent']))
+        return {
+            'session_id': session_id, 'messages': msgs,
+            'summary': {
+                'total_messages': len(msgs),
+                'first_time':     msgs[0]['timestamp'],
+                'last_time':      msgs[-1]['timestamp'],
+                'intents_used':   intents_used
             }
-            for row in rows
-        ]
+        }
+
+    def get_all_logs_for_backup(self):
+        conn = self.get_connection(); cur = conn.cursor(dictionary=True)
+        cur.execute('''
+            SELECT id,session_id,user_message,bot_response,
+                   intent_detected AS intent,confidence,response_time,timestamp
+            FROM conversation_logs ORDER BY timestamp ASC
+        ''')
+        rows = cur.fetchall(); cur.close(); conn.close()
+        return [self._fmt_row(r, ['timestamp']) for r in rows]
 
     def delete_all_logs(self):
-        """Hapus seluruh history percakapan."""
-        conn = self.get_connection()
-        cursor = conn.cursor()
-        cursor.execute('DELETE FROM conversation_logs')
-        deleted = cursor.rowcount
-        conn.commit()
-        conn.close()
+        conn = self.get_connection(); cur = conn.cursor()
+        cur.execute('DELETE FROM conversation_logs')
+        deleted = cur.rowcount; conn.commit(); cur.close(); conn.close()
         return deleted
 
     def delete_session_logs(self, session_id):
-        """Hapus semua pesan dalam 1 session."""
-        conn = self.get_connection()
-        cursor = conn.cursor()
-        cursor.execute(
-            'DELETE FROM conversation_logs WHERE session_id = ?',
-            (session_id,)
-        )
-        deleted = cursor.rowcount
-        conn.commit()
-        conn.close()
+        conn = self.get_connection(); cur = conn.cursor()
+        cur.execute('DELETE FROM conversation_logs WHERE session_id=%s', (session_id,))
+        deleted = cur.rowcount; conn.commit(); cur.close(); conn.close()
         return deleted
 
-    def save_feedback(self, session_id, message_id, rating, feedback_text):
-        """Simpan feedback pengguna"""
-        conn = self.get_connection()
-        cursor = conn.cursor()
-        
-        cursor.execute('''
-            INSERT INTO user_feedback (session_id, message_id, rating, feedback_text)
-            VALUES (?, ?, ?, ?)
-        ''', (session_id, message_id, rating, feedback_text))
-        
-        conn.commit()
-        conn.close()
-    
-    def get_faq_list(self):
-        """Ambil daftar FAQ untuk management"""
-        conn = self.get_connection()
-        cursor = conn.cursor()
-        
-        cursor.execute('''
-            SELECT id, question, answer, category, is_active, created_at, updated_at
-            FROM faq_management
-            WHERE is_active = 1
-            ORDER BY category, id
-        ''')
-        
-        faqs = cursor.fetchall()
-        conn.close()
-        
-        return [
-            {
-                'id': faq[0],
-                'question': faq[1],
-                'answer': faq[2],
-                'category': faq[3],
-                'is_active': faq[4],
-                'created_at': faq[5],
-                'updated_at': faq[6]
-            }
-            for faq in faqs
-        ]
-    
-    def add_faq(self, question, answer, category):
-        """Tambah FAQ baru"""
-        conn = self.get_connection()
-        cursor = conn.cursor()
-        
-        cursor.execute('''
-            INSERT INTO faq_management (question, answer, category)
-            VALUES (?, ?, ?)
-        ''', (question, answer, category))
-        
-        conn.commit()
-        faq_id = cursor.lastrowid
-        conn.close()
-        
-        return faq_id
-    
-    def update_faq(self, faq_id, question, answer, category):
-        """Update FAQ"""
-        conn = self.get_connection()
-        cursor = conn.cursor()
-        
-        cursor.execute('''
-            UPDATE faq_management
-            SET question = ?, answer = ?, category = ?, updated_at = CURRENT_TIMESTAMP
-            WHERE id = ?
-        ''', (question, answer, category, faq_id))
-        
-        conn.commit()
-        conn.close()
-    
-    def delete_faq(self, faq_id):
-        """Soft delete FAQ"""
-        conn = self.get_connection()
-        cursor = conn.cursor()
-        
-        cursor.execute('''
-            UPDATE faq_management
-            SET is_active = 0, updated_at = CURRENT_TIMESTAMP
-            WHERE id = ?
-        ''', (faq_id,))
-        
-        conn.commit()
-        conn.close()
-    
     def search_logs(self, search_query, intent_filter=None):
-        """Cari dalam log percakapan"""
-        conn = self.get_connection()
-        cursor = conn.cursor()
-        
-        query = '''
-            SELECT id, session_id, user_message, bot_response, intent_detected, 
-                   confidence, response_time, timestamp
-            FROM conversation_logs
-            WHERE (user_message LIKE ? OR bot_response LIKE ?)
-        '''
+        conn = self.get_connection(); cur = conn.cursor(dictionary=True)
+        sql = '''SELECT id,session_id,user_message,bot_response,
+                        intent_detected AS intent,confidence,response_time,timestamp
+                 FROM conversation_logs WHERE (user_message LIKE %s OR bot_response LIKE %s)'''
         params = [f'%{search_query}%', f'%{search_query}%']
-        
         if intent_filter:
-            query += ' AND intent_detected = ?'
-            params.append(intent_filter)
-        
-        query += ' ORDER BY timestamp DESC LIMIT 50'
-        
-        cursor.execute(query, params)
-        logs = cursor.fetchall()
-        conn.close()
-        
-        return [
-            {
-                'id': log[0],
-                'session_id': log[1],
-                'user_message': log[2],
-                'bot_response': log[3],
-                'intent': log[4],
-                'confidence': log[5],
-                'response_time': log[6],
-                'timestamp': log[7]
-            }
-            for log in logs
-        ]
+            sql += ' AND intent_detected=%s'; params.append(intent_filter)
+        sql += ' ORDER BY timestamp DESC LIMIT 50'
+        cur.execute(sql, params); rows = cur.fetchall(); cur.close(); conn.close()
+        return [self._fmt_row(r, ['timestamp']) for r in rows]
+
+    # =================================================================
+    # ANALYTICS
+    # =================================================================
+    def get_analytics_summary(self):
+        conn = self.get_connection(); cur = conn.cursor(dictionary=True)
+        cur.execute('SELECT COUNT(DISTINCT session_id) AS total FROM conversation_logs')
+        tc = cur.fetchone()['total']
+        cur.execute('SELECT COUNT(*) AS total FROM conversation_logs')
+        tm = cur.fetchone()['total']
+        cur.execute('SELECT AVG(response_time) AS avg FROM conversation_logs')
+        art = cur.fetchone()['avg'] or 0
+        cur.execute('''
+            SELECT intent_detected AS intent, COUNT(*) AS count
+            FROM conversation_logs WHERE intent_detected IS NOT NULL
+            GROUP BY intent_detected ORDER BY count DESC
+        ''')
+        top_intents = cur.fetchall()
+        cur.execute('''
+            SELECT DATE(timestamp) AS date, COUNT(*) AS count
+            FROM conversation_logs WHERE timestamp >= DATE_SUB(NOW(), INTERVAL 7 DAY)
+            GROUP BY DATE(timestamp) ORDER BY date
+        ''')
+        mpd = []
+        for r in cur.fetchall():
+            mpd.append({'date': r['date'].strftime('%Y-%m-%d') if hasattr(r['date'],'strftime') else r['date'], 'count': r['count']})
+        cur.execute('SELECT AVG(confidence) AS avg FROM conversation_logs WHERE confidence IS NOT NULL')
+        ac = cur.fetchone()['avg'] or 0
+        cur.close(); conn.close()
+        return {
+            'total_conversations': tc, 'total_messages': tm,
+            'avg_response_time':   round(float(art), 3),
+            'avg_confidence':      round(float(ac), 2),
+            'top_intents': top_intents, 'messages_per_day': mpd
+        }
+
+    def get_hourly_activity(self):
+        conn = self.get_connection(); cur = conn.cursor(dictionary=True)
+        cur.execute('''
+            SELECT HOUR(timestamp) AS hour, COUNT(*) AS count
+            FROM conversation_logs WHERE timestamp >= DATE_SUB(NOW(), INTERVAL 7 DAY)
+            GROUP BY HOUR(timestamp) ORDER BY hour
+        ''')
+        rows = cur.fetchall(); cur.close(); conn.close()
+        hmap = {r['hour']: r['count'] for r in rows}
+        return [{'hour': h, 'count': hmap.get(h, 0)} for h in range(24)]
+
+    def get_intent_confidence_stats(self):
+        conn = self.get_connection(); cur = conn.cursor(dictionary=True)
+        cur.execute('''
+            SELECT intent_detected AS intent,
+                   ROUND(AVG(confidence),3) AS avg_confidence, COUNT(*) AS count
+            FROM conversation_logs
+            WHERE intent_detected IS NOT NULL AND confidence IS NOT NULL
+            GROUP BY intent_detected ORDER BY avg_confidence ASC
+        ''')
+        rows = cur.fetchall(); cur.close(); conn.close()
+        return rows
+
+    # =================================================================
+    # INTENTS — response_text langsung di tabel ini
+    # =================================================================
+    def get_all_intents(self):
+        conn = self.get_connection(); cur = conn.cursor(dictionary=True)
+        cur.execute('SELECT * FROM intents ORDER BY intent_name')
+        rows = cur.fetchall(); cur.close(); conn.close()
+        for r in rows:
+            r['patterns']      = json.loads(r['patterns'])      if r['patterns']      else []
+            r['quick_replies'] = json.loads(r['quick_replies'])  if r['quick_replies'] else []
+            self._fmt_row(r, ['created_at','updated_at'])
+        return rows
+
+    def get_intent_by_name(self, intent_name):
+        """Dipakai oleh RuleEngine untuk ambil response_text."""
+        conn = self.get_connection(); cur = conn.cursor(dictionary=True)
+        cur.execute('SELECT * FROM intents WHERE intent_name=%s', (intent_name,))
+        row = cur.fetchone(); cur.close(); conn.close()
+        if row:
+            row['patterns']      = json.loads(row['patterns'])      if row['patterns']      else []
+            row['quick_replies'] = json.loads(row['quick_replies'])  if row['quick_replies'] else []
+        return row
+
+    def add_intent(self, intent_name, patterns, response_text, quick_replies=None):
+        conn = self.get_connection(); cur = conn.cursor()
+        cur.execute('''
+            INSERT INTO intents (intent_name, patterns, response_text, quick_replies)
+            VALUES (%s,%s,%s,%s)
+        ''', (intent_name,
+              json.dumps(patterns, ensure_ascii=False),
+              response_text,
+              json.dumps(quick_replies or [], ensure_ascii=False)))
+        conn.commit(); cur.close(); conn.close()
+
+    def update_intent(self, old_name, intent_name, patterns, response_text, quick_replies=None):
+        conn = self.get_connection(); cur = conn.cursor()
+        cur.execute('''
+            UPDATE intents SET intent_name=%s, patterns=%s, response_text=%s, quick_replies=%s
+            WHERE intent_name=%s
+        ''', (intent_name,
+              json.dumps(patterns, ensure_ascii=False),
+              response_text,
+              json.dumps(quick_replies or [], ensure_ascii=False),
+              old_name))
+        conn.commit(); cur.close(); conn.close()
+
+    def delete_intent(self, intent_name):
+        conn = self.get_connection(); cur = conn.cursor()
+        cur.execute('DELETE FROM intents WHERE intent_name=%s', (intent_name,))
+        conn.commit(); cur.close(); conn.close()
